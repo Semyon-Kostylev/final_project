@@ -52,6 +52,7 @@
 </template>
 <script>
 import { defineComponent, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   setup() {
@@ -60,8 +61,10 @@ export default defineComponent({
       password: '',
     });
 
-    const onFinish = (values) => {
-      console.log('Success:', values);
+    const router = useRouter();
+
+    const onFinish = () => {
+      router.push({ name: 'profile-main' });
     };
 
     const onFinishFailed = (errorInfo) => {
