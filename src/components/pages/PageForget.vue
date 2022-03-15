@@ -1,19 +1,24 @@
 <template>
-  <div class="authorization">
+  <div class="forget-password">
 
-    <div class="authorization__logo logo">
+    <div class="forget-password__logo logo">
       <span class="logo__name">Logo</span>
     </div>
 
     <a-form
       :model="formState"
       name="normal_login"
-      class="authorization__form login-form"
+      class="forget-password__form login-form"
       @finish="onFinish"
       @finishFailed="onFinishFailed"
     >
 
-      <h1 class="login-form__title">Вход</h1>
+      <h1 class="login-form__title">Восстановление пароля</h1>
+
+      <p class="login-form__description description">
+        Для восстановления пароля введите номер телефона,
+        который был указан при регистрации
+      </p>
 
       <a-form-item
         class="login-form__input form-input"
@@ -24,35 +29,21 @@
         </a-input>
       </a-form-item>
 
-      <a-form-item
-        class="login-form__input form-input"
-        name="password"
-        :rules="[{ required: true, message: 'Введите пароль' }]"
-      >
-        <a-input-password class="form-input__input" v-model:value="formState.password">
-        </a-input-password>
-      </a-form-item>
-
-      <a-form-item class="login-form__forget forget-link">
-        <router-link :to="{ name: 'forget-password' }">Забыли пароль?</router-link>
-      </a-form-item>
-
       <a-form-item class="login-form__submit submit">
         <a-button type="primary" html-type="submit"
         class="submit__button login-form-button">
-          Войти
+          Сбросить пароль
         </a-button>
       </a-form-item>
 
-      <a-form-item class="login-form__link authorization-link">
-        <router-link :to="{ name: 'registration' }">Ещё нет учётной записи?</router-link>
+      <a-form-item class="login-form__link forget-password-link">
+        <router-link :to="{ name: 'authorization' }">Вернуться</router-link>
       </a-form-item>
     </a-form>
   </div>
 </template>
 <script>
 import { defineComponent, reactive } from 'vue';
-import { useRouter } from 'vue-router';
 
 export default defineComponent({
   setup() {
@@ -61,10 +52,8 @@ export default defineComponent({
       password: '',
     });
 
-    const router = useRouter();
-
-    const onFinish = () => {
-      router.push({ name: 'profile-user' });
+    const onFinish = (values) => {
+      console.log('Success:', values);
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -83,7 +72,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 
-.authorization {
+.forget-password {
   padding: 100px;
 
   &__logo {
@@ -107,7 +96,9 @@ export default defineComponent({
 }
 
 .login-form {
-  padding: 52px 67px 51px 68px;
+  display: flex;
+  flex-direction: column;
+  padding: 52px 39px 51px 43px;
   width: 469px;
   border: 1px solid $main-border-color;
 
@@ -119,16 +110,15 @@ export default defineComponent({
   }
 
   &__input {
-    margin-bottom: 15px;
+    margin: 0 auto 31px;
   }
 
-  &__forget {
-    margin-left: auto;
-    margin-bottom: 27px;
+  &__description {
+    margin-bottom: 29px;
   }
 
   &__submit {
-    margin: 0 auto 20px;
+    margin: 0 auto 19px;
   }
 
   &__link {
@@ -136,9 +126,11 @@ export default defineComponent({
   }
 }
 
-.forget-link {
-  width: max-content;
-  text-decoration: underline;
+.description {
+  font-size: 14px;
+  text-align: center;
+  line-height: 19px;
+  color: $black-color;
 }
 
 .submit {
@@ -146,19 +138,20 @@ export default defineComponent({
 
   &__button {
     height: 45px;
-    width: 175px;
+    width: 154px;
     border-radius: 5px;
     border: none;
   }
 }
 
-.authorization-link {
+.forget-password-link {
   width: max-content;
   text-decoration: underline;
   color: $dark-grey-color;
 }
 
 .form-input {
+  width: 334px;
   &__input {
     padding: 5px 20px;
     height: 45px;

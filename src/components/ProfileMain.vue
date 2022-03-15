@@ -1,18 +1,16 @@
 <template>
-  <a-layout class="profile">
-    <a-layout-header class="profile__header header">
+  <div class="profile">
+    <header class="profile__header header">
       <div class="header__container container">
 
         <a href="#" class="header__logo logo">Logo</a>
 
         <nav class="header__nav nav">
           <ul class="nav__list">
-            <li class="nav__item">
-              <a class="nav__link" href="#">Публикации</a>
+            <li class="nav__item" v-for="headerNavLink in headerNavLinks" :key="headerNavLink.id">
+              <a class="nav__link" href="#">{{ headerNavLink.title }}</a>
             </li>
-            <li class="nav__item">
-              <a class="nav__link" href="#">Авторы</a>
-            </li>
+
           </ul>
         </nav>
 
@@ -22,29 +20,79 @@
         </div>
 
       </div>
-    </a-layout-header>
+    </header>
 
-    <a-layout>
-      <a-layout-sider>Sider</a-layout-sider>
-      <a-layout-content>Content</a-layout-content>
-    </a-layout>
+    <section class="main">
 
-  </a-layout>
+      <aside class="main__sider sider">
+        <nav class="sider__nav sider-nav">
+          <ul class="sider-nav__list">
+            <li class="sider-nav__item"
+              v-for="siderNavLink in siderNavLinks"
+              :key="siderNavLink.id"
+            >
+              <a class="sider-nav__link" href="#"
+                @click.prevent="goTolink(siderNavLink)"
+              >
+                <span class="sider-nav__mark">x</span>
+                {{ siderNavLink.title }}
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <div class="main__content content">
+        <slot></slot>
+      </div>
+    </section>
+
+  </div>
 </template>
 
-<style lang="scss" scoped>
-  a {
-    color: #333333;
-  }
+<script>
+import { useRouter } from 'vue-router';
 
+export default {
+  setup() {
+    const headerNavLinks = [
+      { title: 'Публикации', id: 1 },
+      { title: 'Авторы', id: 2 },
+    ];
+
+    const siderNavLinks = [
+      { title: 'Мои публикации', id: 1, urlName: { name: 'publications' } },
+      { title: 'Мои лайки', id: 2, urlName: { name: 'likes' } },
+      { title: 'Мои комментарии', id: 3, urlName: { name: 'comments' } },
+    ];
+
+    const router = useRouter();
+
+    const goTolink = (link) => {
+      router.push(link.urlName);
+    };
+
+    return {
+      siderNavLinks,
+      headerNavLinks,
+      goTolink,
+    };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
   .profile {
-    color: #333333;
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    min-height: 100vh;
+    color: $black-color;
   }
 
   .header {
     height: max-content;
-    border: 2px solid #d7d7d7;
-    background-color: #f6f6f6;
+    border: 2px solid $gray-border-color;
+    background-color: $dark-white-color;
 
     &__container {
       display: flex;
@@ -60,18 +108,19 @@
   .logo {
     width: 155px;
     height: 60px;
-    background-color: #ffffff;
+    border: 1px solid $main-border-color;
     text-align: center;
     text-decoration: none;
+    background-color: $main-bg-color;
   }
 
   .nav {
     margin-right: auto;
 
     &__list {
+      @include list-reset;
       display: flex;
       margin: 0;
-      list-style: none;
     }
 
     &__item {
@@ -83,6 +132,8 @@
     }
 
     &__link {
+      font-size: 16px;
+      line-height: normal;
       text-decoration: underline;
     }
   }
@@ -95,13 +146,53 @@
       width: 46px;
       height: 42px;
       margin-right: 15px;
-      border: 1px solid black;
-      background-color: #ffffff;
+      border: 1px solid $dark-black-color;
+      text-align: center;
+      line-height: 42px;
+      background-color: $main-bg-color;
     }
 
     &__link {
+      font-size: 15px;
       height: max-content;
       text-decoration: underline;
     }
+  }
+
+  .main {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+  }
+
+  .sider {
+    padding: 28px 44px ;
+    background-color: $sider-bg-color;
+  }
+
+  .sider-nav {
+    &__list {
+      @include list-reset;
+    }
+
+    &__item {
+      margin-bottom: 20px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 37px;
+      color: $dark-black-color;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &__mark {
+      text-align: center;
+      margin-right: 3px;
+    }
+  }
+
+  .content {
+    padding: 47px 0 50px 44px;
   }
 </style>

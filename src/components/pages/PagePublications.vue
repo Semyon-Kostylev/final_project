@@ -1,18 +1,17 @@
 <template>
   <profile-main>
-    <edit-password />
-    <router-link :to="{ name: 'profile-user' }">Мой профиль</router-link>
+    <publications-all />
   </profile-main>
 </template>
 
 <script>
 import ProfileMain from '@/components/ProfileMain.vue';
-import EditPassword from '@/components/edit/EditPassword.vue';
+import PublicationsAll from '@/components/publications/PublicationsAll.vue';
 
 export default {
   components: {
     ProfileMain,
-    EditPassword,
+    PublicationsAll,
   },
 };
 </script>

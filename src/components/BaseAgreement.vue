@@ -92,7 +92,7 @@ export default {
     width: 100%;
     height: 100vh;
     padding: 100px 30px;
-    background-color: #797979;
+    background-color: $gray-bg-color;
     z-index: 1;
   }
 
@@ -104,7 +104,7 @@ export default {
     width: 906px;
     height: 100%;
     margin: 0 auto;
-    background-color: #ffffff;
+    background-color: $main-bg-color;
 
     &__close {
       position: absolute;
@@ -115,7 +115,7 @@ export default {
       border: none;
       font-size: 35px;
       line-height: normal;
-      color: #333333;
+      color: $black-color;
       background-color: inherit;
       cursor: pointer;
     }
@@ -123,13 +123,13 @@ export default {
     &__title {
       margin-bottom: 30px;
       font-weight: 700;
-      color: #000000;
+      color: $dark-black-color;
       text-align: center;
     }
 
     &__content {
       margin-bottom: 39px;
-      color: #333333;
+      color: $black-color;
       text-align: left;
       line-height: 25px;
     }

@@ -1,10 +1,13 @@
 <template>
-  <router-view />
+  <div>Лайки</div>
 </template>
 
 <script>
-
 export default {
-  name: 'App',
+
 };
 </script>
+
+<style lang="scss" scoped>
+
+</style>

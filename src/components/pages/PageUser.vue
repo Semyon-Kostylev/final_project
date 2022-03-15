@@ -1,18 +1,18 @@
 <template>
   <profile-main>
-    <edit-password />
-    <router-link :to="{ name: 'profile-user' }">Мой профиль</router-link>
+    <edit-user />
+    <router-link :to="{ name: 'profile-password' }">Изменить пароль</router-link>
   </profile-main>
 </template>
 
 <script>
 import ProfileMain from '@/components/ProfileMain.vue';
-import EditPassword from '@/components/edit/EditPassword.vue';
+import EditUser from '@/components/edit/EditUser.vue';
 
 export default {
   components: {
     ProfileMain,
-    EditPassword,
+    EditUser,
   },
 };
 </script>

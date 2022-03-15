@@ -1,0 +1,36 @@
+@mixin btn-reset {
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+@mixin list-reset {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+@mixin btn-hover-transition {
+  transition: background-color .1s ease-in-out;
+}
+
+@mixin btn-hover {
+  background-color: $orange-hover;
+}
+
+@mixin white-btn-hover-transition {
+  transition: box-shadow .1s ease-in-out;
+}
+
+@mixin white-btn-hover {
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+@mixin opacity-hover-transition {
+  transition: opacity .1s ease-in-out;
+}
+
+@mixin opacity-hover {
+  opacity: .7;
+}

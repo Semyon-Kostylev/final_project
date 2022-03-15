@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 <template>
   <base-agreement v-if="modalState" :modal="modalState" @close-modal="modalClose"/>
   <div class="registration">
@@ -113,6 +112,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+
 .registration {
   padding: 100px;
 
@@ -131,7 +131,7 @@ export default defineComponent({
   justify-content: center;
   width: 155px;
   height: 60px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid $main-border-color;
   text-align: center;
   font-size: 13px;
 }
@@ -139,7 +139,7 @@ export default defineComponent({
 .login-form {
   padding: 52px 67px 51px 68px;
   width: 469px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid $main-border-color;
 
   &__title {
     text-align: center;
@@ -172,12 +172,12 @@ export default defineComponent({
 .description-block {
   &__description {
     width: 270px;
-    color: #666666;
+    color: $grey-color;
     font-size: 12px;
   }
 
   &__link {
-    color: #666666;
+    color: $grey-color;
     text-decoration: underline;
   }
 }
@@ -196,7 +196,7 @@ export default defineComponent({
 .authorization-link {
   width: max-content;
   text-decoration: underline;
-  color: #4d4d4d;
+  color: $dark-grey-color;
 }
 
 .form-input {
@@ -204,7 +204,7 @@ export default defineComponent({
     padding: 5px 20px;
     height: 45px;
     border-radius: 5px;
-    border: 1px solid #d9d9d9;
+    border: 1px solid $main-border-color;
     font-size: 14px;
   }
 }
