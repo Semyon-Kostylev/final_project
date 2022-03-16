@@ -1,5 +1,5 @@
 <template>
-  <base-agreement v-if="modalState" :modal="modalState" @close-modal="modalClose"/>
+  <agreement-base v-if="modalState" :modal="modalState" @close-modal="modalClose"/>
   <div class="registration">
     <div class="registration__logo logo">
       <span class="logo__name">Logo</span>
@@ -70,11 +70,11 @@
 </template>
 <script>
 import { defineComponent, reactive, ref } from 'vue';
-import BaseAgreement from '@/components/BaseAgreement.vue';
+import AgreementBase from '@/components/agreements/AgreementBase.vue';
 
 export default defineComponent({
   components: {
-    BaseAgreement,
+    AgreementBase,
   },
 
   setup() {

@@ -8,7 +8,9 @@
         <nav class="header__nav nav">
           <ul class="nav__list">
             <li class="nav__item" v-for="headerNavLink in headerNavLinks" :key="headerNavLink.id">
-              <a class="nav__link" href="#">{{ headerNavLink.title }}</a>
+              <a class="nav__link" @click.prevent="goTolink(headerNavLink)"
+                href="#">{{ headerNavLink.title }}
+              </a>
             </li>
 
           </ul>
@@ -16,7 +18,7 @@
 
         <div class="header__user user">
           <div class="user__photo">Фото</div>
-          <a class="user__link" href="#">John Smith</a>
+          <router-link :to="{ name: 'user' }" class="user__link">John Smith</router-link>
         </div>
 
       </div>
@@ -43,7 +45,8 @@
       </aside>
 
       <div class="main__content content">
-        <slot></slot>
+        <router-view/>
+        <router-view name="password"/>
       </div>
     </section>
 
@@ -56,14 +59,14 @@ import { useRouter } from 'vue-router';
 export default {
   setup() {
     const headerNavLinks = [
-      { title: 'Публикации', id: 1 },
-      { title: 'Авторы', id: 2 },
+      { title: 'Публикации', id: 1, urlName: { name: 'publications' } },
+      { title: 'Авторы', id: 2, urlName: { name: 'authors' } },
     ];
 
     const siderNavLinks = [
-      { title: 'Мои публикации', id: 1, urlName: { name: 'publications' } },
-      { title: 'Мои лайки', id: 2, urlName: { name: 'likes' } },
-      { title: 'Мои комментарии', id: 3, urlName: { name: 'comments' } },
+      { title: 'Мои публикации', id: 1, urlName: { name: 'my-publications' } },
+      { title: 'Мои лайки', id: 2, urlName: { name: 'my-likes' } },
+      { title: 'Мои комментарии', id: 3, urlName: { name: 'my-comments' } },
     ];
 
     const router = useRouter();
@@ -193,6 +196,6 @@ export default {
   }
 
   .content {
-    padding: 47px 0 50px 44px;
+    padding: 47px 44px 50px;
   }
 </style>

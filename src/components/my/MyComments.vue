@@ -1,5 +1,5 @@
 <template>
-  <div>Комменты</div>
+  <div>Мои комменты</div>
 </template>
 
 <script>

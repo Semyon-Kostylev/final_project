@@ -64,6 +64,7 @@
       </div>
 
     </div>
+    <router-link :to="{ name: 'password' }">Изменить пароль</router-link>
   </div>
 </template>
 <script>

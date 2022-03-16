@@ -1,12 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import PageRegistration from '@/components/pages/PageRegistration.vue';
 import PageAuthorization from '@/components/pages/PageAuthorization.vue';
 import PageForget from '@/components/pages/PageForget.vue';
-import PageUser from '@/components//pages/PageUser.vue';
-import PagePassword from '@/components/pages/PagePassword.vue';
-import PagePublications from '@/components/pages/PagePublications.vue';
-import PageLikes from '@/components/pages/PageLikes.vue';
-import PageComments from '@/components/pages/PageComments.vue';
+
+import PageMain from '@/components/pages/PageMain.vue';
+
+import EditUser from '@/components/edit/EditUser.vue';
+import EditPassword from '@/components/edit/EditPassword.vue';
+
+import MyLikes from '@/components/my/MyLikes.vue';
+import MyPublications from '@/components/my/MyPublications.vue';
+import MyComments from '@/components/my/MyComments.vue';
+
+import AllPublications from '@/components/all/AllPublications.vue';
+import AllAuthors from '@/components/all/AllAuthors.vue';
 
 const routes = [
   {
@@ -25,29 +33,48 @@ const routes = [
     component: PageForget,
   },
   {
-    path: '/profile-user',
-    name: 'profile-user',
-    component: PageUser,
-  },
-  {
-    path: '/profile-password',
-    name: 'profile-password',
-    component: PagePassword,
-  },
-  {
-    path: '/publications',
-    name: 'publications',
-    component: PagePublications,
-  },
-  {
-    path: '/likes',
-    name: 'likes',
-    component: PageLikes,
-  },
-  {
-    path: '/comments',
-    name: 'comments',
-    component: PageComments,
+    path: '/profile',
+    component: PageMain,
+    children: [
+      // profile
+      {
+        path: '/profile',
+        name: 'user',
+        component: EditUser,
+      },
+      {
+        path: '/password',
+        name: 'password',
+        component: EditPassword,
+      },
+      // my
+      {
+        name: 'my-publications',
+        path: '/my-publications',
+        component: MyPublications,
+      },
+      {
+        name: 'my-likes',
+        path: '/my-likes',
+        component: MyLikes,
+      },
+      {
+        name: 'my-comments',
+        path: '/my-comments',
+        component: MyComments,
+      },
+      // all
+      {
+        name: 'publications',
+        path: '/publications',
+        component: AllPublications,
+      },
+      {
+        name: 'authors',
+        path: '/authors',
+        component: AllAuthors,
+      },
+    ],
   },
 ];
 

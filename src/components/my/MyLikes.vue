@@ -1,5 +1,5 @@
 <template>
-  <div>Публикации</div>
+  <div>Мои лайки</div>
 </template>
 
 <script>

@@ -64,7 +64,7 @@ export default defineComponent({
     const router = useRouter();
 
     const onFinish = () => {
-      router.push({ name: 'profile-user' });
+      router.push({ name: 'user' });
     };
 
     const onFinishFailed = (errorInfo) => {

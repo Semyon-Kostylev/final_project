@@ -58,6 +58,7 @@
 
       </a-form>
   </div>
+  <router-link :to="{ name: 'user' }">Изменить профиль</router-link>
 </template>
 <script>
 import { defineComponent, reactive } from 'vue';
