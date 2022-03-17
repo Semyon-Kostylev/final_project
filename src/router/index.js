@@ -11,6 +11,7 @@ import EditPassword from '@/components/edit/EditPassword.vue';
 
 import MyLikes from '@/components/my/MyLikes.vue';
 import MyPublications from '@/components/my/MyPublications.vue';
+import MyPublication from '@/components/my/MyPublication.vue';
 import MyComments from '@/components/my/MyComments.vue';
 
 import AllPublications from '@/components/all/AllPublications.vue';
@@ -52,6 +53,11 @@ const routes = [
         name: 'my-publications',
         path: '/my-publications',
         component: MyPublications,
+      },
+      {
+        name: 'my-publication',
+        path: '/my-publications/:id',
+        component: MyPublication,
       },
       {
         name: 'my-likes',
