@@ -2,10 +2,10 @@
   <div class="authorization">
 
     <div class="authorization__logo logo">
-      <span class="logo__name">Logo</span>
+      <img class="logo__name" src="@/assets/img/svg/logo-img.svg" alt="Logo">
     </div>
 
-    <a-form
+    <a-form novalidate
       :model="formState"
       name="normal_login"
       class="authorization__form login-form"
@@ -17,11 +17,12 @@
 
       <a-form-item
         class="login-form__input form-input"
-        name="username"
-        :rules="[{ required: true, message: 'Введите e-mail' }]"
+        name="userEmail"
+        :rules="[{ required: true, message: 'Введите e-mail', type: 'email' }]"
       >
-        <a-input class="form-input__input" v-model:value="formState.username">
+        <a-input class="form-input__input" required v-model:value="formState.userEmail">
         </a-input>
+        <div class="form-input__placeholder">Email</div>
       </a-form-item>
 
       <a-form-item
@@ -29,7 +30,11 @@
         name="password"
         :rules="[{ required: true, message: 'Введите пароль' }]"
       >
-        <a-input-password class="form-input__input" v-model:value="formState.password">
+        <a-input-password
+        class="form-input__input"
+        v-model:value="formState.password"
+        placeholder="Пароль"
+        >
         </a-input-password>
       </a-form-item>
 
@@ -44,6 +49,8 @@
         </a-button>
       </a-form-item>
 
+      <p class="login-form__invalid" v-if="isInvalid">Неверный Email или пароль</p>
+
       <a-form-item class="login-form__link authorization-link">
         <router-link :to="{ name: 'registration' }">Ещё нет учётной записи?</router-link>
       </a-form-item>
@@ -51,20 +58,26 @@
   </div>
 </template>
 <script>
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import users from '@/data/users';
 
 export default defineComponent({
   setup() {
+    const router = useRouter();
+
     const formState = reactive({
-      username: '',
+      userEmail: '',
       password: '',
     });
 
-    const router = useRouter();
+    const isInvalid = ref(false);
 
-    const onFinish = () => {
-      router.push({ name: 'user' });
+    const onFinish = (values) => {
+      // eslint-disable-next-line max-len
+      const findUser = users.find((user) => user.userEmail === values.userEmail && user.password === values.password);
+      // eslint-disable-next-line no-unused-expressions
+      findUser ? router.push({ name: 'user' }) : isInvalid.value = true;
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -73,6 +86,7 @@ export default defineComponent({
 
     return {
       formState,
+      isInvalid,
       onFinish,
       onFinishFailed,
     };
@@ -131,6 +145,12 @@ export default defineComponent({
     margin: 0 auto 20px;
   }
 
+  &__invalid {
+    margin-bottom: 20px;
+    text-align: center;
+    color: red;
+  }
+
   &__link {
     margin: 0 auto;
   }
@@ -149,6 +169,7 @@ export default defineComponent({
     width: 175px;
     border-radius: 5px;
     border: none;
+    background-color: $black-color;
   }
 }
 
@@ -159,12 +180,34 @@ export default defineComponent({
 }
 
 .form-input {
+  position: relative;
   &__input {
     padding: 5px 20px;
     height: 45px;
     border-radius: 5px;
     border: 1px solid $main-border-color;
     font-size: 14px;
+
+    &:focus + .form-input__placeholder {
+      font-size: 12px;
+      transform: translate(20px, -55px);
+    }
+
+    &:valid + .form-input__placeholder {
+      font-size: 12px;
+      transform: translate(20px, -55px);
+    }
+  }
+
+  .form-input__placeholder {
+    position: absolute;
+    padding: 1px;
+    cursor: text;
+    transform: translate(20px, -34px);
+    transition: all 0.3s;
+    color: gray;
+    background-color: $main-bg-color;
+    z-index: 1;
   }
 }
 </style>

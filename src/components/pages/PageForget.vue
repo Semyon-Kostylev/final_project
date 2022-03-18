@@ -2,10 +2,10 @@
   <div class="forget-password">
 
     <div class="forget-password__logo logo">
-      <span class="logo__name">Logo</span>
+      <img class="logo__name" src="@/assets/img/svg/logo-img.svg" alt="Logo">
     </div>
 
-    <a-form
+    <a-form novalidate
       :model="formState"
       name="normal_login"
       class="forget-password__form login-form"
@@ -25,8 +25,9 @@
         name="username"
         :rules="[{ required: true, message: 'Введите e-mail' }]"
       >
-        <a-input class="form-input__input" v-model:value="formState.username">
+        <a-input class="form-input__input" required v-model:value="formState.username">
         </a-input>
+        <div class="form-input__placeholder">Email</div>
       </a-form-item>
 
       <a-form-item class="login-form__submit submit">
@@ -141,6 +142,7 @@ export default defineComponent({
     width: 154px;
     border-radius: 5px;
     border: none;
+    background-color: $black-color;
   }
 }
 
@@ -151,13 +153,34 @@ export default defineComponent({
 }
 
 .form-input {
-  width: 334px;
+  position: relative;
   &__input {
     padding: 5px 20px;
     height: 45px;
     border-radius: 5px;
     border: 1px solid $main-border-color;
     font-size: 14px;
+
+    &:focus + .form-input__placeholder {
+      font-size: 12px;
+      transform: translate(20px, -55px);
+    }
+
+    &:valid + .form-input__placeholder {
+      font-size: 12px;
+      transform: translate(20px, -55px);
+    }
+  }
+
+  .form-input__placeholder {
+    position: absolute;
+    padding: 1px;
+    cursor: text;
+    transform: translate(20px, -34px);
+    transition: all 0.3s;
+    color: gray;
+    background-color: $main-bg-color;
+    z-index: 1;
   }
 }
 </style>

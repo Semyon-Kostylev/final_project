@@ -8,3 +8,9 @@ export default {
   name: 'App',
 };
 </script>
+
+<style lang="scss">
+  input::placeholder {
+    color: gray !important;
+  }
+</style>

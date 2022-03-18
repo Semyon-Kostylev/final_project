@@ -5,45 +5,47 @@
 
     <div class="edit-user__wrapper">
 
-      <a-form
+      <a-form novalidate
         :model="formState"
-        name="user-info"
+        name="nest-messages"
         class="edit-user__form form"
         @finish="onFinish"
-        @finishFailed="onFinishFailed"
       >
         <a-form-item
           class="form__input form-input"
           name="user-surname"
-          :rules="[{ required: true, message: 'Введите фамилию' }]"
         >
           <a-input class="form-input__input"
+            required
             v-model:value="formState.userSurname">
           </a-input>
+          <div class="form-input__placeholder">Фамилия</div>
         </a-form-item>
 
         <a-form-item
           class="form__input form-input"
           name="user-firstname"
-          :rules="[{ required: true, message: 'Введите имя' }]"
         >
           <a-input
             class="form-input__input"
+            required
             v-model:value="formState.userFirstname"
           >
           </a-input>
+          <div class="form-input__placeholder">Имя</div>
         </a-form-item>
 
         <a-form-item
           class="form__input form__input-last form-input"
           name="user-secondname"
-          :rules="[{ required: true, message: 'Введите отчество' }]"
         >
           <a-input
             class="form-input__input"
+            required
             v-model:value="formState.userSecondname"
           >
           </a-input>
+          <div class="form-input__placeholder">Отчество</div>
         </a-form-item>
 
         <a-form-item class="form__submit submit">
@@ -59,7 +61,10 @@
       </a-form>
 
       <div class="edit-user__photo photo">
-        <div class="photo__image">Фотография пользователя</div>
+        <img class="photo__image"
+          src="@/assets/img/svg/user-photo.svg"
+          alt="@/assets/img/svg/user-photo.svg"
+        >
         <a class="photo__link" href="#">Изменить</a>
       </div>
 
@@ -130,16 +135,41 @@ export default defineComponent({
     &__button {
       width: 110px;
       height: 45px;
+      border: none;
+      border-radius: 5px;
+      background-color: $black-color;
     }
   }
 
   .form-input {
+    position: relative;
     &__input {
       padding: 5px 20px;
       height: 45px;
       border-radius: 5px;
       border: 1px solid $main-border-color;
       font-size: 14px;
+
+      &:focus + .form-input__placeholder {
+        font-size: 12px;
+        transform: translate(20px, -55px);
+      }
+
+      &:valid + .form-input__placeholder {
+        font-size: 12px;
+        transform: translate(20px, -55px);
+      }
+    }
+
+    .form-input__placeholder {
+      position: absolute;
+      padding: 1px;
+      cursor: text;
+      transform: translate(20px, -34px);
+      transition: all 0.3s;
+      color: gray;
+      background-color: $main-bg-color;
+      z-index: 1;
     }
   }
 

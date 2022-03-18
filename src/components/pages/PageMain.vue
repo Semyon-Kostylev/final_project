@@ -3,7 +3,9 @@
     <header class="profile__header header">
       <div class="header__container container">
 
-        <a href="#" class="header__logo logo">Logo</a>
+        <a href="#" class="header__logo logo">
+          <img class="logo__img" src="@/assets/img/svg/logo-img.svg" alt="Logo">
+        </a>
 
         <nav class="header__nav nav">
           <ul class="nav__list">
@@ -17,8 +19,19 @@
         </nav>
 
         <div class="header__user user">
-          <div class="user__photo">Фото</div>
-          <router-link :to="{ name: 'user' }" class="user__link">John Smith</router-link>
+          <div class="user__photo" @click="openUserModal" @keydown="openUserModal">
+            <img class="user__img"
+              src="@/assets/img/svg/user-photo.svg"
+              alt="@/assets/img/svg/user-photo.svg"
+            >
+          </div>
+          <div class="user__link" @click="openUserModal" @keydown="openUserModal">John Smith</div>
+
+          <div v-if="userModal" class="user__modal user-modal">
+            <a href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+          </div>
         </div>
 
       </div>
@@ -54,6 +67,7 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
@@ -75,10 +89,18 @@ export default {
       router.push(link.urlName);
     };
 
+    const userModal = ref(false);
+
+    const openUserModal = () => {
+      userModal.value = !userModal.value;
+    };
+
     return {
       siderNavLinks,
       headerNavLinks,
       goTolink,
+      userModal,
+      openUserModal,
     };
   },
 };
@@ -109,12 +131,10 @@ export default {
   }
 
   .logo {
-    width: 155px;
-    height: 60px;
-    border: 1px solid $main-border-color;
-    text-align: center;
-    text-decoration: none;
-    background-color: $main-bg-color;
+    &__img {
+      width: 155px;
+      height: 60px;
+    }
   }
 
   .nav {
@@ -146,19 +166,20 @@ export default {
     align-items: center;
 
     &__photo {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    &__img {
       width: 46px;
       height: 42px;
-      margin-right: 15px;
-      border: 1px solid $dark-black-color;
-      text-align: center;
-      line-height: 42px;
-      background-color: $main-bg-color;
     }
 
     &__link {
       font-size: 15px;
       height: max-content;
       text-decoration: underline;
+      cursor: pointer;
     }
   }
 
