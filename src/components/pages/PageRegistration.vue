@@ -25,7 +25,7 @@
         name="userEmail"
         :rules="[{ required: true, message: 'Введите e-mail', type: 'email' }]"
       >
-        <a-input class="form-input__input" required v-model:value="formState.userEmail">
+        <a-input class="form-input__input input-base" required v-model:value="formState.userEmail">
         </a-input>
         <div class="form-input__placeholder">Email</div>
       </a-form-item>
@@ -36,7 +36,7 @@
         :rules="[{ required: true, message: 'Введите пароль' }]"
       >
         <a-input-password
-          class="form-input__input"
+          class="form-input__input input-base"
           v-model:value="formState.password"
           placeholder="Пароль"
         >
@@ -47,10 +47,10 @@
         <p class="description-block__description">
           Регистрируясь вы соглашаетесь с&nbsp;<a
             @click.prevent="modalOpen"
-            class="description-block__link"
+            class="description-block__link link-black"
             href="#"
             >Пользовательским соглашением</a
-          >&nbsp;и&nbsp;<a class="description-block__link"
+          >&nbsp;и&nbsp;<a class="description-block__link link-black"
             @click.prevent="modalOpen"
             href="#"
             >Условиями обработки персональных данных</a
@@ -62,7 +62,7 @@
         <a-button
           type="primary"
           html-type="submit"
-          class="submit__button login-form-button"
+          class="submit__button login-form-button btn-black"
         >
           Зарегистрироваться
         </a-button>
@@ -71,7 +71,7 @@
       <p class="login-form__invalid" v-if="isInvalid.isActive">{{ isInvalid.message }}</p>
 
       <a-form-item class="login-form__link authorization-link">
-        <router-link :to="{ name: 'authorization' }"
+        <router-link class="link-black" :to="{ name: 'authorization' }"
           >Уже регистрировались?</router-link
         >
       </a-form-item>
@@ -244,50 +244,23 @@ export default defineComponent({
   }
 
   &__link {
+    font-size: 12px;
     color: $grey-color;
-    text-decoration: underline;
   }
 }
 
 .submit {
   width: max-content;
-
-  &__button {
-    height: 45px;
-    width: 175px;
-    border-radius: 5px;
-    background-color: $black-color;
-    border: none;
-  }
 }
 
 .authorization-link {
   width: max-content;
-  text-decoration: underline;
-  color: $dark-grey-color;
 }
 
 .form-input {
   position: relative;
-  &__input {
-    padding: 5px 20px;
-    height: 45px;
-    border-radius: 5px;
-    border: 1px solid $main-border-color;
-    font-size: 14px;
 
-    &:focus + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-
-    &:valid + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-  }
-
-  .form-input__placeholder {
+  &__placeholder {
     position: absolute;
     padding: 1px;
     cursor: text;

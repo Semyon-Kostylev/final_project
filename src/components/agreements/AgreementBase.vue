@@ -51,7 +51,7 @@
       </div>
       <a-button type="primary" html-type="button"
         @click="$emit('close-modal')"
-        class="modal__button">
+        class="modal__button btn-black">
           Понятно
       </a-button>
     </div>
@@ -132,6 +132,10 @@ export default {
       color: $black-color;
       text-align: left;
       line-height: 25px;
+
+      & p {
+        margin-bottom: 15px;
+      }
     }
 
     &__button {

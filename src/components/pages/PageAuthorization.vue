@@ -20,7 +20,7 @@
         name="userEmail"
         :rules="[{ required: true, message: 'Введите e-mail', type: 'email' }]"
       >
-        <a-input class="form-input__input" required v-model:value="formState.userEmail">
+        <a-input class="form-input__input input-base" required v-model:value="formState.userEmail">
         </a-input>
         <div class="form-input__placeholder">Email</div>
       </a-form-item>
@@ -31,7 +31,7 @@
         :rules="[{ required: true, message: 'Введите пароль' }]"
       >
         <a-input-password
-        class="form-input__input"
+        class="form-input__input input-base"
         v-model:value="formState.password"
         placeholder="Пароль"
         >
@@ -39,12 +39,16 @@
       </a-form-item>
 
       <a-form-item class="login-form__forget forget-link">
-        <router-link :to="{ name: 'forget-password' }">Забыли пароль?</router-link>
+        <router-link class="link-black"
+          :to="{ name: 'forget-password' }"
+        >
+          Забыли пароль?
+        </router-link>
       </a-form-item>
 
       <a-form-item class="login-form__submit submit">
         <a-button type="primary" html-type="submit"
-        class="submit__button login-form-button">
+        class="submit__button login-form-button btn-black">
           Войти
         </a-button>
       </a-form-item>
@@ -52,7 +56,11 @@
       <p class="login-form__invalid" v-if="isInvalid">Неверный Email или пароль</p>
 
       <a-form-item class="login-form__link authorization-link">
-        <router-link :to="{ name: 'registration' }">Ещё нет учётной записи?</router-link>
+        <router-link class="link-black"
+          :to="{ name: 'registration' }"
+        >
+          Ещё нет учётной записи?
+        </router-link>
       </a-form-item>
     </a-form>
   </div>
@@ -158,48 +166,20 @@ export default defineComponent({
 
 .forget-link {
   width: max-content;
-  text-decoration: underline;
 }
 
 .submit {
   width: max-content;
-
-  &__button {
-    height: 45px;
-    width: 175px;
-    border-radius: 5px;
-    border: none;
-    background-color: $black-color;
-  }
 }
 
 .authorization-link {
   width: max-content;
-  text-decoration: underline;
-  color: $dark-grey-color;
 }
 
 .form-input {
   position: relative;
-  &__input {
-    padding: 5px 20px;
-    height: 45px;
-    border-radius: 5px;
-    border: 1px solid $main-border-color;
-    font-size: 14px;
 
-    &:focus + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-
-    &:valid + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-  }
-
-  .form-input__placeholder {
+  &__placeholder {
     position: absolute;
     padding: 1px;
     cursor: text;

@@ -3,16 +3,27 @@
 
     <div class="publications__top">
       <h1 class="publications__title">Мои публикации</h1>
-      <button class="publications__add-button">Добавить</button>
+      <button class="publications__add-button btn-black">Добавить</button>
     </div>
 
     <label class="publications__search search" for="search">
-      <input class="search__input" name="search" type="text">
+      <input class="search__input" :class="{ 'search__input-open': isSearchInputOpen }"
+        name="search" type="text" v-model="searchInput"
+        @click="isSearchInputOpen = true"
+      >
       <search-outlined class="search__icon" />
+      <span
+        class="search__mark"
+        v-if="isSearchInputOpen"
+        @click="isSearchInputOpen = false"
+        @keydown="isSearchInputOpen = false"
+      >
+        x
+      </span>
     </label>
 
     <ul class="publications__list list">
-      <li class="list__item" v-for="publication in loadedPublications" :key="publication.id">
+      <li class="list__item" v-for="publication in filteredPublications" :key="publication.id">
 
         <article class="list__article publication">
 
@@ -43,9 +54,9 @@
       </li>
     </ul>
 
-    <button class="publications__more"
+    <button class="publications__more btn-black"
+      @click="downloadMorePublication"
       v-show="buttonIsVisible"
-      @click="publicationFilter"
     >
       Ещё
     </button>
@@ -55,7 +66,9 @@
 
 <script>
 import { SearchOutlined } from '@ant-design/icons-vue';
-import { defineComponent, onMounted, ref } from 'vue';
+import {
+  computed, defineComponent, onUpdated, ref,
+} from 'vue';
 import publications from '@/data/publications';
 
 export default defineComponent({
@@ -64,29 +77,42 @@ export default defineComponent({
   },
 
   setup() {
-    const publicationIndex = ref(0);
-    const publicationPerPage = ref(9);
-    const loadedPublications = ref([]);
     const buttonIsVisible = ref(true);
 
-    const publicationFilter = () => {
-      // eslint-disable-next-line max-len
-      loadedPublications.value = publications.slice(publicationIndex.value, publicationPerPage.value);
-      publicationPerPage.value *= 2;
+    const searchInput = ref('');
+    const isSearchInputOpen = ref(false);
+    const isStartIndexOfPublication = ref(0);
+    const isPublicationOnLoad = ref(9);
 
-      if (publications.length <= loadedPublications.value.length) {
-        buttonIsVisible.value = false;
+    const filteredPublications = computed(() => {
+      if (searchInput.value) {
+        // eslint-disable-next-line max-len
+        return publications.filter((publication) => publication.title.includes(searchInput.value));
       }
+
+      return publications.slice(isStartIndexOfPublication.value, isPublicationOnLoad.value);
+    });
+
+    const downloadMorePublication = () => {
+      isPublicationOnLoad.value += isPublicationOnLoad.value;
     };
 
-    onMounted(() => {
-      publicationFilter();
+    onUpdated(() => {
+      if (filteredPublications.value.length === publications.length
+      || filteredPublications.value.length < 9) {
+        buttonIsVisible.value = false;
+      } else {
+        buttonIsVisible.value = true;
+      }
     });
 
     return {
-      loadedPublications,
-      publicationFilter,
+      publications,
       buttonIsVisible,
+      searchInput,
+      isSearchInputOpen,
+      filteredPublications,
+      downloadMorePublication,
     };
   },
 });
@@ -112,17 +138,6 @@ export default defineComponent({
       line-height: normal;
     }
 
-    &__add-button {
-      @include btn-reset;
-      width: 103px;
-      height: 45px;
-      border-radius: 5px;
-      font-size: 13px;
-      text-align: center;
-      color: $main-bg-color;
-      background-color: $dark-black-color;
-    }
-
     &__search {
       position: absolute;
       top: 5px;
@@ -134,15 +149,7 @@ export default defineComponent({
     }
 
     &__more {
-      @include btn-reset;
       justify-self: center;
-      width: 67px;
-      height: 45px;
-      border-radius: 5px;
-      font-size: 13px;
-      text-align: center;
-      color: $main-bg-color;
-      background-color: $dark-black-color;
     }
   }
 
@@ -153,6 +160,11 @@ export default defineComponent({
       height: 45px;
       border: 1px solid $main-border-color;
       border-radius: 5px;
+      transition: width .2s ease-in-out;
+    }
+
+    &__input-open {
+      width: 800px;
     }
 
     &__icon  {
@@ -162,6 +174,16 @@ export default defineComponent({
       width: 20px;
       height: 20px;
       font-size: 16px;
+    }
+
+    &__mark {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      font-size: 16px;
+      font-weight: 700;
+      transform: translateY(-50%);
+      cursor: pointer;
     }
   }
 
@@ -192,6 +214,12 @@ export default defineComponent({
       text-decoration: underline;
       line-height: 24px;
       color: $black-color;
+      transition: opacity .2s ease-in-out;
+
+      &:hover, &:focus {
+        opacity: .8;
+        outline: none;
+      }
     }
 
     &__wrapper {

@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import PageRegistration from '@/components/pages/PageRegistration.vue';
 import PageAuthorization from '@/components/pages/PageAuthorization.vue';
 import PageForget from '@/components/pages/PageForget.vue';
+import PageError from '@/components/pages/PageError.vue';
 
 import PageMain from '@/components/pages/PageMain.vue';
 
@@ -81,6 +82,10 @@ const routes = [
         component: AllAuthors,
       },
     ],
+  },
+  {
+    path: '/:pathMatch(.*)',
+    component: PageError,
   },
 ];
 

@@ -10,9 +10,12 @@
         <nav class="header__nav nav">
           <ul class="nav__list">
             <li class="nav__item" v-for="headerNavLink in headerNavLinks" :key="headerNavLink.id">
-              <a class="nav__link" @click.prevent="goTolink(headerNavLink)"
-                href="#">{{ headerNavLink.title }}
-              </a>
+              <router-link
+                class="nav__link"
+                :to="{ name: headerNavLink.urlName }"
+              >
+                {{ headerNavLink.title }}
+              </router-link>
             </li>
 
           </ul>
@@ -25,12 +28,24 @@
               alt="@/assets/img/svg/user-photo.svg"
             >
           </div>
-          <div class="user__link" @click="openUserModal" @keydown="openUserModal">John Smith</div>
+          <div class="user__link" @click="openUserModal" @keydown="openUserModal">
+            {{ users[0].userFirstname }} {{ users[0].userSurname }}
+          </div>
 
           <div v-if="userModal" class="user__modal user-modal">
-            <a href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
+            <ul class="user-modal__list">
+              <li class="user-modal__item"
+                v-for="userModalLink in userModalLinks" :key="userModalLink.id"
+              >
+                <router-link
+                  class="user-modal__link link-black"
+                  @click="userModal = false"
+                  :to="{ name: userModalLink.urlName }"
+                >
+                  {{ userModalLink.title }}
+                </router-link>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -46,12 +61,12 @@
               v-for="siderNavLink in siderNavLinks"
               :key="siderNavLink.id"
             >
-              <a class="sider-nav__link" href="#"
-                @click.prevent="goTolink(siderNavLink)"
+              <router-link class="sider-nav__link"
+                :to="{ name: siderNavLink.urlName }"
               >
                 <span class="sider-nav__mark">x</span>
                 {{ siderNavLink.title }}
-              </a>
+              </router-link>
             </li>
           </ul>
         </nav>
@@ -69,18 +84,25 @@
 <script>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import users from '@/data/users';
 
 export default {
   setup() {
     const headerNavLinks = [
-      { title: 'Публикации', id: 1, urlName: { name: 'publications' } },
-      { title: 'Авторы', id: 2, urlName: { name: 'authors' } },
+      { title: 'Публикации', id: 1, urlName: 'publications' },
+      { title: 'Авторы', id: 2, urlName: 'authors' },
     ];
 
     const siderNavLinks = [
-      { title: 'Мои публикации', id: 1, urlName: { name: 'my-publications' } },
-      { title: 'Мои лайки', id: 2, urlName: { name: 'my-likes' } },
-      { title: 'Мои комментарии', id: 3, urlName: { name: 'my-comments' } },
+      { title: 'Мои публикации', id: 1, urlName: 'my-publications' },
+      { title: 'Мои лайки', id: 2, urlName: 'my-likes' },
+      { title: 'Мои комментарии', id: 3, urlName: 'my-comments' },
+    ];
+
+    const userModalLinks = [
+      { id: 1, title: 'Профиль', urlName: 'user' },
+      { id: 2, title: 'Изменение пароля', urlName: 'password' },
+      { id: 3, title: 'Выход', urlName: 'authorization' },
     ];
 
     const router = useRouter();
@@ -98,9 +120,11 @@ export default {
     return {
       siderNavLinks,
       headerNavLinks,
+      userModalLinks,
       goTolink,
       userModal,
       openUserModal,
+      users,
     };
   },
 };
@@ -115,6 +139,7 @@ export default {
   }
 
   .header {
+    width: 100%;
     height: max-content;
     border: 2px solid $gray-border-color;
     background-color: $dark-white-color;
@@ -158,10 +183,17 @@ export default {
       font-size: 16px;
       line-height: normal;
       text-decoration: underline;
+      transition: opacity 0.2s ease-in-out;
+
+      &:hover, &:focus, &:active {
+        opacity: 0.6;
+        color: $dark-grey-color;
+      }
     }
   }
 
   .user {
+    position: relative;
     display: flex;
     align-items: center;
 
@@ -180,6 +212,49 @@ export default {
       height: max-content;
       text-decoration: underline;
       cursor: pointer;
+    }
+
+    &__modal {
+      position: absolute;
+      top: 138%;
+      left: -15%;
+      z-index: 1;
+    }
+  }
+
+  .user-modal {
+    width: 219px;
+    padding: 15px 20px 9px;
+    border: 1px solid $main-border-color;
+    border-radius: 5px;
+    background-color: $main-bg-color;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 40px;
+      top: -8px;
+      width: 15px;
+      height: 15px;
+      border-top: 1px solid $main-border-color;
+      border-left: 1px solid $main-border-color;
+      transform: rotate(45deg);
+      background-color: $main-bg-color;
+    }
+
+    &__list {
+      @include list-reset;
+    }
+
+    &__item {
+      margin-bottom: 15 px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    &__link {
+      font-size: 16px;
     }
   }
 
@@ -207,6 +282,15 @@ export default {
 
       &:last-child {
         margin-bottom: 0;
+      }
+    }
+
+    &__link {
+      transition: opacity 0.2s ease-in-out;
+
+      &:hover, &:focus, &:active {
+        opacity: 0.6;
+        color: $dark-grey-color;
       }
     }
 

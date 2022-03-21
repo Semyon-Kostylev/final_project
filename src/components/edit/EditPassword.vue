@@ -4,19 +4,20 @@
     <h1 class="edit-password__title">Изменение пароля</h1>
 
       <a-form
+        class="edit-password__form form"
         :model="formState"
         name="password"
-        class="edit-password__form form"
         @finish="onFinish"
         @finishFailed="onFinishFailed"
       >
         <a-form-item
           class="login-form__input form-input"
-          name="old-password"
+          name="oldPassword"
           :rules="[{ required: true, message: 'Введите текущий пароль' }]"
         >
           <a-input-password
-            class="form-input__input"
+            class="form-input__input input-base"
+            placeholder="Текущий пароль"
             v-model:value="formState.oldPassword"
           >
           </a-input-password>
@@ -24,11 +25,12 @@
 
         <a-form-item
           class="login-form__input form-input"
-          name="new-password"
+          name="newPassword"
           :rules="[{ required: true, message: 'Введите новый пароль' }]"
         >
           <a-input-password
-            class="form-input__input"
+            class="form-input__input input-base"
+            placeholder="Новый пароль"
             v-model:value="formState.newPassword"
           >
           </a-input-password>
@@ -36,11 +38,12 @@
 
         <a-form-item
           class="login-form__input login-form__input-last form-input"
-          name="repeat-new-password"
+          name="repeatNewPassword"
           :rules="[{ required: true, message: 'Повторите новый пароль' }]"
         >
           <a-input-password
-            class="form-input__input"
+            class="form-input__input input-base"
+            placeholder="Повторите новый пароль"
             v-model:value="formState.repeatNewPassword"
           >
           </a-input-password>
@@ -48,20 +51,22 @@
 
         <a-form-item class="form__submit submit">
           <a-button
+            class="submit__button login-form-button btn-black"
             type="primary"
             html-type="submit"
-            class="submit__button login-form-button"
           >
             Сохранить
           </a-button>
         </a-form-item>
 
+        <p class="form__message">{{ formState.formMessage }}</p>
+
       </a-form>
   </div>
-  <router-link :to="{ name: 'user' }">Изменить профиль</router-link>
 </template>
 <script>
 import { defineComponent, reactive } from 'vue';
+import users from '@/data/users';
 
 export default defineComponent({
 
@@ -70,14 +75,39 @@ export default defineComponent({
       oldPassword: '',
       newPassword: '',
       repeatNewPassword: '',
+      formMessage: '',
     });
 
-    const onFinish = (values) => {
-      console.log('Success:', values);
+    const onFinish = () => {
+      if (formState.oldPassword !== users[0].password) {
+        formState.formMessage = 'Вы ввели неверный текущий пароль';
+        return;
+      }
+
+      if (formState.oldPassword === formState.newPassword) {
+        formState.formMessage = 'Текущий пароль и новый пароль не должны совпадать';
+        return;
+      }
+
+      if (formState.newPassword.length < 5) {
+        formState.formMessage = 'Длина нового пароля должна быть не менее 5 символов';
+        return;
+      }
+
+      if (formState.newPassword !== formState.repeatNewPassword) {
+        formState.formMessage = 'Вы ввели два разных новых пароля';
+        return;
+      }
+
+      document.querySelector('.form__message').style.color = 'green';
+
+      formState.formMessage = 'Пароль успешно изменён!';
+      users[0].password = formState.newPassword;
+      console.log(users[0]);
     };
 
-    const onFinishFailed = (errorInfo) => {
-      console.log('Failed:', errorInfo);
+    const onFinishFailed = () => {
+      console.log('no');
     };
 
     return {
@@ -110,24 +140,11 @@ export default defineComponent({
     }
 
     &__input-last {
-        margin-bottom: 20px;
-      }
-  }
-
-  .submit {
-    &__button {
-      width: 110px;
-      height: 45px;
+      margin-bottom: 20px;
     }
-  }
 
-  .form-input {
-    &__input {
-      padding: 5px 20px;
-      height: 45px;
-      border-radius: 5px;
-      border: 1px solid $main-border-color;
-      font-size: 14px;
+    &__message {
+      color: red;
     }
   }
 
@@ -145,12 +162,7 @@ export default defineComponent({
     &__link {
       align-self: center;
       width: max-content;
-      font-size: 14px;
-      text-decoration: underline;
       text-align: center;
-      line-height: normal;
-      color: $dark-grey-color;
     }
-
   }
 </style>

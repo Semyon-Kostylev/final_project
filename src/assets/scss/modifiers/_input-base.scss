@@ -1,0 +1,27 @@
+.input-base {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid $main-border-color;
+  font-size: 14px;
+  transition: border-color 0.2s ease-in-out;
+
+  & + div {
+    pointer-events: none;
+  }
+
+  &:hover, &:focus {
+    outline: none;
+    border-color: $dark-grey-color;
+    box-shadow: none;
+  }
+
+  &:focus + div {
+    font-size: 12px;
+    transform: translate(20px, -55px);
+  }
+
+  &:valid + div {
+    font-size: 12px;
+    transform: translate(20px, -55px);
+  }
+}

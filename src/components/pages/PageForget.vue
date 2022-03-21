@@ -25,20 +25,20 @@
         name="username"
         :rules="[{ required: true, message: 'Введите e-mail' }]"
       >
-        <a-input class="form-input__input" required v-model:value="formState.username">
+        <a-input class="form-input__input input-base" required v-model:value="formState.username">
         </a-input>
         <div class="form-input__placeholder">Email</div>
       </a-form-item>
 
       <a-form-item class="login-form__submit submit">
         <a-button type="primary" html-type="submit"
-        class="submit__button login-form-button">
+        class="submit__button login-form-button btn-black">
           Сбросить пароль
         </a-button>
       </a-form-item>
 
       <a-form-item class="login-form__link forget-password-link">
-        <router-link :to="{ name: 'authorization' }">Вернуться</router-link>
+        <router-link class="link-black" :to="{ name: 'authorization' }">Вернуться</router-link>
       </a-form-item>
     </a-form>
   </div>
@@ -136,43 +136,16 @@ export default defineComponent({
 
 .submit {
   width: max-content;
-
-  &__button {
-    height: 45px;
-    width: 154px;
-    border-radius: 5px;
-    border: none;
-    background-color: $black-color;
-  }
 }
 
 .forget-password-link {
   width: max-content;
-  text-decoration: underline;
-  color: $dark-grey-color;
 }
 
 .form-input {
   position: relative;
-  &__input {
-    padding: 5px 20px;
-    height: 45px;
-    border-radius: 5px;
-    border: 1px solid $main-border-color;
-    font-size: 14px;
 
-    &:focus + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-
-    &:valid + .form-input__placeholder {
-      font-size: 12px;
-      transform: translate(20px, -55px);
-    }
-  }
-
-  .form-input__placeholder {
+  &__placeholder {
     position: absolute;
     padding: 1px;
     cursor: text;

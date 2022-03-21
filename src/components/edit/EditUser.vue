@@ -13,9 +13,9 @@
       >
         <a-form-item
           class="form__input form-input"
-          name="user-surname"
+          name="userSurname"
         >
-          <a-input class="form-input__input"
+          <a-input class="form-input__input input-base"
             required
             v-model:value="formState.userSurname">
           </a-input>
@@ -24,10 +24,10 @@
 
         <a-form-item
           class="form__input form-input"
-          name="user-firstname"
+          name="userFirstname"
         >
           <a-input
-            class="form-input__input"
+            class="form-input__input input-base"
             required
             v-model:value="formState.userFirstname"
           >
@@ -37,10 +37,10 @@
 
         <a-form-item
           class="form__input form__input-last form-input"
-          name="user-secondname"
+          name="userSecondname"
         >
           <a-input
-            class="form-input__input"
+            class="form-input__input input-base"
             required
             v-model:value="formState.userSecondname"
           >
@@ -50,9 +50,9 @@
 
         <a-form-item class="form__submit submit">
           <a-button
+            class="submit__button login-form-button btn-black"
             type="primary"
             html-type="submit"
-            class="submit__button login-form-button"
           >
             Сохранить
           </a-button>
@@ -65,37 +65,46 @@
           src="@/assets/img/svg/user-photo.svg"
           alt="@/assets/img/svg/user-photo.svg"
         >
-        <a class="photo__link" href="#">Изменить</a>
+        <a class="photo__link link-black" href="#">Изменить</a>
       </div>
 
     </div>
-    <router-link :to="{ name: 'password' }">Изменить пароль</router-link>
   </div>
 </template>
 <script>
 import { defineComponent, reactive } from 'vue';
+import users from '@/data/users';
 
 export default defineComponent({
 
   setup() {
     const formState = reactive({
-      userSurname: '',
-      userFirstname: '',
-      userSecondname: '',
+      userSurname: users[0].userSurname,
+      userFirstname: users[0].userFirstname,
+      userSecondname: users[0].userSecondname,
     });
 
-    const onFinish = (values) => {
-      console.log('Success:', values);
-    };
+    const onFinish = () => {
+      if (formState.userSurname) {
+        users[0].userSurname = formState.userSurname;
+      }
 
-    const onFinishFailed = (errorInfo) => {
-      console.log('Failed:', errorInfo);
+      if (formState.userFirstname) {
+        users[0].userFirstname = formState.userFirstname;
+      }
+
+      if (formState.userSecondname) {
+        users[0].userSecondname = formState.userSecondname;
+      }
+
+      console.log(users);
+      // eslint-disable-next-line no-alert
+      alert('Данные успешно обновлены');
     };
 
     return {
       formState,
       onFinish,
-      onFinishFailed,
     };
   },
 });
@@ -131,37 +140,10 @@ export default defineComponent({
       }
   }
 
-  .submit {
-    &__button {
-      width: 110px;
-      height: 45px;
-      border: none;
-      border-radius: 5px;
-      background-color: $black-color;
-    }
-  }
-
   .form-input {
     position: relative;
-    &__input {
-      padding: 5px 20px;
-      height: 45px;
-      border-radius: 5px;
-      border: 1px solid $main-border-color;
-      font-size: 14px;
 
-      &:focus + .form-input__placeholder {
-        font-size: 12px;
-        transform: translate(20px, -55px);
-      }
-
-      &:valid + .form-input__placeholder {
-        font-size: 12px;
-        transform: translate(20px, -55px);
-      }
-    }
-
-    .form-input__placeholder {
+    &__placeholder {
       position: absolute;
       padding: 1px;
       cursor: text;
@@ -187,11 +169,7 @@ export default defineComponent({
     &__link {
       align-self: center;
       width: max-content;
-      font-size: 14px;
-      text-decoration: underline;
       text-align: center;
-      line-height: normal;
-      color: $dark-grey-color;
     }
 
   }

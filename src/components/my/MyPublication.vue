@@ -12,7 +12,7 @@
     >
       <div class="publication__btn-group">
         <button class="publication__btn">Редактировать</button>
-        <button class="publication__btn">Удалить</button>
+        <button class="publication__btn" @click="removePublication">Удалить</button>
       </div>
     </div>
     <div class="publication__description" v-html="publication.description"></div>
@@ -21,17 +21,29 @@
 
 <script>
 import { reactive } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import publications from '@/data/publications';
 
 export default {
   setup() {
     const route = useRoute();
+    const router = useRouter();
+
     const findPublication = publications.find((element) => element.id === +route.params.id);
     const publication = reactive(findPublication);
 
+    const removePublication = () => {
+      // eslint-disable-next-line no-alert
+      if (window.confirm('Вы уверены?')) {
+        // eslint-disable-next-line no-import-assign
+        publications = publications.filter((item) => publication.id !== item.id);
+        router.push({ name: 'my-publications' });
+      }
+    };
+
     return {
       publication,
+      removePublication,
     };
   },
 };
