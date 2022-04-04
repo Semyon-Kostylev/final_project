@@ -1,275 +1,275 @@
 <template>
+    <transition name="show">
+        <base-agreement
+            class="modal-show"
+            v-if="modalState"
+            :modal="modalState"
+            @close-modal="modalState = false"
+        />
+    </transition>
 
-  <transition name="show">
-    <agreement-base class="modal-show" v-if="modalState"
-      :modal="modalState" @close-modal="modalClose"
-    />
-  </transition>
+    <div class="registration">
+        <div class="registration__logo logo">
+            <img class="logo__name" src="@/assets/img/svg/logo-img.svg" alt="Logo" />
+        </div>
 
-  <div class="registration">
-    <div class="registration__logo logo">
-      <img class="logo__name" src="@/assets/img/svg/logo-img.svg" alt="Logo">
+        <a-form
+            :model="formState"
+            name="normal_login"
+            class="registration__form login-form"
+            @finish="onFinish"
+        >
+            <h1 class="login-form__title">Регистрация</h1>
+
+            <a-form-item
+                class="login-form__input form-input"
+                name="email"
+                :rules="[{ required: true, message: 'Введите e-mail', type: 'email' }]"
+            >
+                <a-input class="form-input__input input-base" v-model:value="formState.email">
+                </a-input>
+                <div
+                    class="form-input__placeholder"
+                    :class="{ 'input-base__valid': formState.email }"
+                >
+                    Email
+                </div>
+            </a-form-item>
+
+            <a-form-item
+                class="login-form__input login-form__input-password form-input"
+                name="password"
+                :rules="[{ required: true, message: 'Введите пароль' }]"
+            >
+                <a-input-password
+                    class="form-input__input input-base"
+                    v-model:value="formState.password"
+                >
+                </a-input-password>
+                <div
+                    class="form-input__placeholder"
+                    :class="{ 'input-base__valid': formState.password }"
+                >
+                    Пароль
+                </div>
+            </a-form-item>
+
+            <a-form-item class="login-form__description description-block">
+                <p class="description-block__description">
+                    Регистрируясь вы соглашаетесь с&nbsp;<a
+                        @click.prevent="modalState = true"
+                        class="description-block__link link-black"
+                        href="#"
+                        >Пользовательским соглашением</a
+                    >&nbsp;и&nbsp;<a
+                        class="description-block__link link-black"
+                        @click.prevent="modalState = true"
+                        href="#"
+                        >Условиями обработки персональных данных</a
+                    >
+                </p>
+            </a-form-item>
+
+            <a-form-item class="login-form__submit submit">
+                <a-button
+                    type="primary"
+                    html-type="submit"
+                    class="submit__button login-form-button btn"
+                >
+                    Зарегистрироваться
+                </a-button>
+            </a-form-item>
+
+            <p class="login-form__invalid" ref="invalidMessage" v-if="isInvalid.isActive">
+                {{ isInvalid.message }}
+            </p>
+
+            <a-form-item class="login-form__link authorization-link">
+                <router-link class="link-black" :to="{ name: 'authorization' }"
+                    >Уже регистрировались?
+                </router-link>
+            </a-form-item>
+        </a-form>
     </div>
-
-    <a-form novalidate
-      :model="formState"
-      name="normal_login"
-      class="registration__form login-form"
-      @finish="onFinish"
-      @finishFailed="onFinishFailed"
-    >
-      <h1 class="login-form__title">Регистрация</h1>
-
-      <a-form-item
-        class="login-form__input form-input"
-        name="userEmail"
-        :rules="[{ required: true, message: 'Введите e-mail', type: 'email' }]"
-      >
-        <a-input class="form-input__input input-base" required v-model:value="formState.userEmail">
-        </a-input>
-        <div class="form-input__placeholder">Email</div>
-      </a-form-item>
-
-      <a-form-item
-        class="login-form__input login-form__input-password form-input"
-        name="password"
-        :rules="[{ required: true, message: 'Введите пароль' }]"
-      >
-        <a-input-password
-          class="form-input__input input-base"
-          v-model:value="formState.password"
-          placeholder="Пароль"
-        >
-        </a-input-password>
-      </a-form-item>
-
-      <a-form-item class="login-form__description description-block">
-        <p class="description-block__description">
-          Регистрируясь вы соглашаетесь с&nbsp;<a
-            @click.prevent="modalOpen"
-            class="description-block__link link-black"
-            href="#"
-            >Пользовательским соглашением</a
-          >&nbsp;и&nbsp;<a class="description-block__link link-black"
-            @click.prevent="modalOpen"
-            href="#"
-            >Условиями обработки персональных данных</a
-          >
-        </p>
-      </a-form-item>
-
-      <a-form-item class="login-form__submit submit">
-        <a-button
-          type="primary"
-          html-type="submit"
-          class="submit__button login-form-button btn-black"
-        >
-          Зарегистрироваться
-        </a-button>
-      </a-form-item>
-
-      <p class="login-form__invalid" v-if="isInvalid.isActive">{{ isInvalid.message }}</p>
-
-      <a-form-item class="login-form__link authorization-link">
-        <router-link class="link-black" :to="{ name: 'authorization' }"
-          >Уже регистрировались?</router-link
-        >
-      </a-form-item>
-    </a-form>
-  </div>
 </template>
 <script>
-import {
-  defineComponent, reactive, ref,
-} from 'vue';
-import { useRouter } from 'vue-router';
-import AgreementBase from '@/components/agreements/AgreementBase.vue';
-import users from '@/data/users';
+import { defineComponent, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import BaseAgreement from '@/components/agreements/BaseAgreement.vue'
 
 export default defineComponent({
-  components: {
-    AgreementBase,
-  },
+    components: {
+        BaseAgreement
+    },
 
-  setup() {
-    const router = useRouter();
-    // Модалка
-    const modalState = ref(false);
-    // eslint-disable-next-line no-return-assign
-    const modalOpen = () => modalState.value = true;
-    // eslint-disable-next-line no-return-assign
-    const modalClose = () => modalState.value = false;
+    setup() {
+        const router = useRouter()
 
-    // Данные форм
-    const formState = reactive({
-      userEmail: '',
-      password: '',
-    });
+        const modalState = ref(false)
 
-    const isInvalid = reactive({
-      isActive: false,
-      message: '',
-    });
+        // Данные форм
+        const formState = reactive({
+            email: '',
+            password: ''
+        })
 
-    // Методы регистрации
-    const onFinish = (values) => {
-      isInvalid.isActive = true;
+        const users = ref([])
+        axios
+            .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users')
+            .then((response) => (users.value = response.data))
+            .catch(() => console.log('ошибка'))
 
-      if (!values.userEmail.includes('@')) {
-        isInvalid.message = 'Email должен содержать символ @';
-        return;
-      }
+        const isInvalid = reactive({
+            isActive: false,
+            message: ''
+        })
 
-      const findUser = users.find((user) => user.userEmail === values.userEmail);
+        const invalidMessage = ref(null)
 
-      if (findUser) {
-        isInvalid.message = 'Пользователь с таким Email уже существует';
-        return;
-      }
+        // Методы регистрации
+        const onFinish = (values) => {
+            isInvalid.isActive = true
 
-      if (values.password.length < 5) {
-        isInvalid.message = 'Длина пароля должна быть не менее 5 символов';
-        return;
-      }
+            const findUser = users.value.find((user) => user.email === values.email)
 
-      document.querySelector('.login-form__invalid').style.color = 'green';
-      isInvalid.message = 'Вы успешно зарегистрировались! Ожидайте...';
+            if (findUser) {
+                isInvalid.message = 'Пользователь с таким Email уже существует'
+                return
+            }
 
-      users.push(values);
-      console.log(users);
+            if (values.password.length < 5) {
+                isInvalid.message = 'Длина пароля должна быть не менее 5 символов'
+                return
+            }
 
-      setTimeout(() => router.push({ name: 'authorization' }), 2000);
-    };
+            axios
+                .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users', {
+                    firstname: '',
+                    middlename: '',
+                    lastname: '',
+                    email: formState.email,
+                    password: formState.password
+                })
+                .then(() => {
+                    invalidMessage.value.style.color = 'green'
+                    isInvalid.message = 'Вы успешно зарегистрировались! Ожидайте...'
+                    setTimeout(() => router.push({ name: 'authorization' }), 2000)
+                })
+                .catch(() => {
+                    console.log('ошибка')
+                })
+        }
 
-    const onFinishFailed = (errorInfo) => {
-      console.log('Failed:', errorInfo);
-    };
-
-    return {
-      formState,
-      isInvalid,
-      modalState,
-      modalOpen,
-      modalClose,
-      onFinish,
-      onFinishFailed,
-    };
-  },
-});
+        return {
+            formState,
+            isInvalid,
+            modalState,
+            onFinish,
+            invalidMessage,
+            users
+        }
+    }
+})
 </script>
 
 <style lang="scss" scoped>
-
 .modal-show {
-  z-index: 2;
+    z-index: 2;
 }
 
 .show-enter-active,
 .show-leave-active {
-  transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease;
 }
 
 .show-enter-from,
 .show-leave-to {
-  opacity: 0;
+    opacity: 0;
 }
 
 .registration {
-  padding: 100px;
+    padding: 100px;
 
-  &__logo {
-    margin: 0 auto 44px;
-  }
+    &__logo {
+        margin: 0 auto 44px;
+    }
 
-  &__form {
-    margin: 0 auto;
-  }
+    &__form {
+        margin: 0 auto;
+    }
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 155px;
-  height: 60px;
-  border: 1px solid $main-border-color;
-  text-align: center;
-  font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 155px;
+    height: 60px;
+    border: 1px solid $main-border-color;
+    text-align: center;
+    font-size: 13px;
 }
 
 .login-form {
-  padding: 52px 67px 51px 68px;
-  width: 469px;
-  border: 1px solid $main-border-color;
+    padding: 52px 67px 51px 68px;
+    width: 469px;
+    border: 1px solid $main-border-color;
 
-  &__title {
-    text-align: center;
-    margin-bottom: 1em;
-    font-size: 26px;
-    font-weight: 700;
-  }
+    &__title {
+        text-align: center;
+        margin-bottom: 1em;
+        font-size: 26px;
+        font-weight: 700;
+    }
 
-  &__input {
-    margin-bottom: 15px;
-  }
+    &__input {
+        margin-bottom: 15px;
+    }
 
-  &__input-password {
-    margin-bottom: 30px;
-  }
+    &__input-password {
+        margin-bottom: 30px;
+    }
 
-  &__description {
-    margin-bottom: 30px;
-  }
+    &__description {
+        margin-bottom: 30px;
+    }
 
-  &__submit {
-    margin: 0 auto 20px;
-  }
+    &__submit {
+        margin: 0 auto 20px;
+    }
 
-  &__invalid {
-    margin-bottom: 20px;
-    text-align: center;
-    color: red;
-  }
+    &__invalid {
+        margin-bottom: 20px;
+        text-align: center;
+        color: red;
+    }
 
-  &__link {
-    margin: 0 auto;
-  }
+    &__link {
+        margin: 0 auto;
+    }
 }
 
 .description-block {
-  &__description {
-    width: 270px;
-    color: $grey-color;
-    font-size: 12px;
-  }
+    &__description {
+        width: 270px;
+        font-size: 12px;
+    }
 
-  &__link {
-    font-size: 12px;
-    color: $grey-color;
-  }
+    &__link {
+        font-size: 12px;
+    }
 }
 
 .submit {
-  width: max-content;
+    width: max-content;
 }
 
 .authorization-link {
-  width: max-content;
+    width: max-content;
 }
 
 .form-input {
-  position: relative;
-
-  &__placeholder {
-    position: absolute;
-    padding: 1px;
-    cursor: text;
-    transform: translate(20px, -34px);
-    transition: all 0.3s;
-    color: gray;
-    background-color: $main-bg-color;
-    z-index: 1;
-  }
+    position: relative;
 }
-
 </style>

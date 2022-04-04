@@ -1,11 +1,4 @@
 .link-black {
   font-size: 14px;
   text-decoration: underline;
-  color: $dark-grey-color;
-  transition: opacity 0.2s ease-in-out;
-
-  &:hover, &:focus, &:active {
-    opacity: 0.6;
-    color: $dark-grey-color;
-  }
 }

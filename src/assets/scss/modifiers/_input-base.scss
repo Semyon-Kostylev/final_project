@@ -1,27 +1,32 @@
 .input-base {
   padding: 10px 20px;
   border-radius: 5px;
-  border: 1px solid $main-border-color;
   font-size: 14px;
   transition: border-color 0.2s ease-in-out;
+
+  & + div {
+    position: absolute;
+    cursor: text;
+    margin-left: 20px;
+    top: 50%;
+    transition: all 0.3s;
+    color: gray;
+    background-color: $main-bg-color;
+    line-height: 1px;
+    z-index: 1;
+  }
 
   & + div {
     pointer-events: none;
   }
 
-  &:hover, &:focus {
-    outline: none;
-    border-color: $dark-grey-color;
-    box-shadow: none;
+  &:focus-within + div {
+    font-size: 12px;
+    transform: translateY(-22px);
   }
 
-  &:focus + div {
+  &__valid {
     font-size: 12px;
-    transform: translate(20px, -55px);
-  }
-
-  &:valid + div {
-    font-size: 12px;
-    transform: translate(20px, -55px);
+    transform: translateY(-22px);
   }
 }
