@@ -29,7 +29,7 @@
                         />
                     </div>
                     <div class="user__link" @click="openUserModal" @keydown="openUserModal">
-                        {{ users[0].userFirstname }} {{ users[0].userSurname }}
+                        {{ currentUser.firstname }} {{ currentUser.lastname }}
                     </div>
 
                     <div v-if="userModal" class="user__modal user-modal">
@@ -83,12 +83,14 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import users from '@/data/users'
 
 export default {
     setup() {
+        const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+
         const headerNavLinks = [
             { title: 'Публикации', id: 1, urlName: 'publications' },
             { title: 'Авторы', id: 2, urlName: 'authors' }
@@ -119,6 +121,7 @@ export default {
         }
 
         return {
+            currentUser,
             siderNavLinks,
             headerNavLinks,
             userModalLinks,

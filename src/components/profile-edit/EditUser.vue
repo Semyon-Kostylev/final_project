@@ -9,43 +9,43 @@
                 class="edit-user__form form"
                 @finish="onFinish"
             >
-                <a-form-item class="form__input form-input" name="userSurname">
+                <a-form-item class="form__input form-input" name="firstname">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.userSurname"
+                        v-model:value="formState.firstname"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.userSurname }"
+                        :class="{ 'input-base__valid': formState.firstname }"
                     >
                         Фамилия
                     </div>
                 </a-form-item>
 
-                <a-form-item class="form__input form-input" name="userFirstname">
+                <a-form-item class="form__input form-input" name="middlename">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.userFirstname"
+                        v-model:value="formState.middlename"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.userFirstname }"
+                        :class="{ 'input-base__valid': formState.middlename }"
                     >
                         Имя
                     </div>
                 </a-form-item>
 
-                <a-form-item class="form__input form__input-last form-input" name="userSecondname">
+                <a-form-item class="form__input form__input-last form-input" name="lastname">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.userSecondname"
+                        v-model:value="formState.lastname"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.userSecondname }"
+                        :class="{ 'input-base__valid': formState.lastname }"
                     >
                         Отчество
                     </div>
@@ -75,33 +75,73 @@
 </template>
 <script>
 import { defineComponent, reactive } from 'vue'
-import users from '@/data/users'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { notification } from 'ant-design-vue'
 
 export default defineComponent({
     setup() {
+        const router = useRouter()
+        const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+
+        if (!currentUser) {
+            router.push({ name: 'authorization' })
+        }
+
         const formState = reactive({
-            userSurname: users[0].userSurname,
-            userFirstname: users[0].userFirstname,
-            userSecondname: users[0].userSecondname
+            firstname: currentUser.firstname,
+            middlename: currentUser.middlename,
+            lastname: currentUser.lastname
         })
 
+        const openNotificationWithIcon = (type) => {
+            notification[type]({
+                message: 'Данные успешно изменены!'
+            })
+        }
+
         const onFinish = () => {
-            if (formState.userSurname) {
-                users[0].userSurname = formState.userSurname
+            if (
+                currentUser.firstname === formState.firstname &&
+                currentUser.middlename === formState.middlename &&
+                currentUser.lastname === formState.lastname
+            ) {
+                return
             }
 
-            if (formState.userFirstname) {
-                users[0].userFirstname = formState.userFirstname
+            if (formState.firstname) {
+                currentUser.firstname = formState.firstname
             }
 
-            if (formState.userSecondname) {
-                users[0].userSecondname = formState.userSecondname
+            if (formState.middlename) {
+                currentUser.middlename = formState.middlename
             }
 
-            alert('Данные успешно обновлены')
+            if (formState.lastname) {
+                currentUser.lastname = formState.lastname
+            }
+
+            axios
+                .put(
+                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
+                    {
+                        firstname: currentUser.firstname,
+                        middlename: currentUser.middlename,
+                        lastname: currentUser.lastname
+                    }
+                )
+                .then(() => {
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser))
+                    openNotificationWithIcon('success')
+                    setTimeout(() => location.reload(), 4000)
+                })
+                .catch(() => {
+                    console.log('ошибка')
+                })
         }
 
         return {
+            currentUser,
             formState,
             onFinish
         }

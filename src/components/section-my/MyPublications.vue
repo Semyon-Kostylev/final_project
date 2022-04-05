@@ -2,7 +2,10 @@
     <div class="publications">
         <div class="publications__top">
             <h1 class="publications__title">Мои публикации</h1>
-            <a-button class="publications__add-button btn" type="primary">Добавить</a-button>
+            <a-button class="publications__add-button btn" type="primary">
+                Добавить
+                <my-publication-edit class="publications__edit" />
+            </a-button>
         </div>
 
         <label class="publications__search search" for="search">
@@ -38,8 +41,8 @@
                     >
                         <img
                             class="publication__img"
-                            src="@/assets/img/svg/publication-test.svg"
-                            alt="@/assets/img/svg/publication-test.svg"
+                            :src="publication.image"
+                            :alt="publication.title"
                         />
                     </router-link>
 
@@ -54,11 +57,8 @@
                         <div class="publication__wrapper">
                             <span class="publication__date">{{ publication.date }}</span>
                             <button class="publication__button">
-                                <img
-                                    class="publication__icon"
-                                    src="@/assets/img/svg/edit-publication.svg"
-                                    alt="edit"
-                                />
+                                <my-publication-edit class="publications__edit" />
+                                <form-outlined class="publication__icon" />
                             </button>
                         </div>
                     </div>
@@ -78,16 +78,25 @@
 </template>
 
 <script>
-import { SearchOutlined } from '@ant-design/icons-vue'
+import { SearchOutlined, FormOutlined } from '@ant-design/icons-vue'
 import { computed, defineComponent, onUpdated, ref } from 'vue'
-import publications from '@/data/publications'
+import axios from 'axios'
+import MyPublicationEdit from '@/components/publication-events/MyPublicationEdit.vue'
 
 export default defineComponent({
     components: {
-        SearchOutlined
+        SearchOutlined,
+        FormOutlined,
+        MyPublicationEdit
     },
 
     setup() {
+        const publications = ref([])
+        axios
+            .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
+            .then((response) => (publications.value = response.data))
+            .catch(() => console.log('ошибка'))
+
         const buttonIsVisible = ref(true)
 
         const searchInput = ref('')
@@ -95,24 +104,28 @@ export default defineComponent({
         const isStartIndexOfPublication = ref(0)
         const isPublicationOnLoad = ref(9)
 
+        const addPublication = ref(false)
+
         const filteredPublications = computed(() => {
             if (searchInput.value) {
-                // eslint-disable-next-line max-len
-                return publications.filter((publication) =>
+                return publications.value.filter((publication) =>
                     publication.title.includes(searchInput.value)
                 )
             }
 
-            return publications.slice(isStartIndexOfPublication.value, isPublicationOnLoad.value)
+            return publications.value.slice(
+                isStartIndexOfPublication.value,
+                isPublicationOnLoad.value
+            )
         })
 
         const downloadMorePublication = () => {
-            isPublicationOnLoad.value += isPublicationOnLoad.value
+            isPublicationOnLoad.value += 9
         }
 
         onUpdated(() => {
             if (
-                filteredPublications.value.length === publications.length ||
+                filteredPublications.value.length === publications.value.length ||
                 filteredPublications.value.length < 9
             ) {
                 buttonIsVisible.value = false
@@ -127,6 +140,7 @@ export default defineComponent({
             searchInput,
             isSearchInputOpen,
             filteredPublications,
+            addPublication,
             downloadMorePublication
         }
     }
@@ -150,6 +164,19 @@ export default defineComponent({
         color: $black-color;
         font-weight: 700;
         line-height: normal;
+    }
+
+    &__add-button {
+        position: relative;
+    }
+
+    &__edit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
     }
 
     &__search {
@@ -254,6 +281,11 @@ export default defineComponent({
 
     &__button {
         @include btn-reset;
+        position: relative;
+    }
+
+    &__icon {
+        font-size: 20px;
     }
 }
 </style>

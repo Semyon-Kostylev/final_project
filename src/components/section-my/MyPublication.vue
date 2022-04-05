@@ -4,50 +4,67 @@
             <img src="@/assets/img/svg/back-arrow.svg" alt="" />
             вернуться к публикациям
         </router-link>
-        <h1 class="publication__title">{{ publication.title }}</h1>
-        <div class="publication__date">{{ publication.date }}</div>
-        <div class="publication__wrapper">
-            <img
-                class="publication__image"
-                src="@/assets/img/svg/publication-test.svg"
-                alt="@/assets/img/svg/publication-test.svg"
-            />
-            <div class="publication__btn-group">
-                <a-button class="publication__btn btn" type="primary"> Редактировать </a-button>
-
-                <a-button class="publication__btn btn" @click="removePublication" type="primary">
-                    Удалить
-                </a-button>
-            </div>
+        <div class="publication__deleted" v-if="publicationIsDeleted">
+            Публикация успешно удалена
         </div>
-        <div class="publication__description" v-html="publication.description"></div>
+        <div class="publication__content" v-else>
+            <h1 class="publication__title">{{ publication.title }}</h1>
+            <div class="publication__date">{{ publication.date }}</div>
+            <div class="publication__wrapper">
+                <img class="publication__image" :src="publication.image" :alt="publication.title" />
+                <div class="publication__btn-group">
+                    <a-button class="publication__btn btn" type="primary"> Редактировать </a-button>
+
+                    <a-button
+                        class="publication__btn btn"
+                        @click="removePublication"
+                        type="primary"
+                    >
+                        Удалить
+                    </a-button>
+                </div>
+            </div>
+            <div class="publication__description" v-html="publication.description"></div>
+        </div>
     </div>
 </template>
 
 <script>
-import { reactive } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import publications from '@/data/publications'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
 
 export default {
     setup() {
         const route = useRoute()
-        const router = useRouter()
 
-        const findPublication = publications.find((element) => element.id === +route.params.id)
-        const publication = reactive(findPublication)
+        const publication = ref({})
+        const publicationIsDeleted = ref(false)
+
+        axios
+            .get(
+                `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+            )
+            .then((response) => (publication.value = response.data))
+            .catch(() => console.log('ошибка'))
 
         const removePublication = () => {
-            // eslint-disable-next-line no-alert
             if (window.confirm('Вы уверены?')) {
-                // eslint-disable-next-line no-import-assign
-                publications = publications.filter((item) => publication.id !== item.id)
-                router.push({ name: 'my-publications' })
+                axios
+                    .delete(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                    )
+                    .then(() => {
+                        publication.value = null
+                        publicationIsDeleted.value = true
+                    })
+                    .catch(() => console.log('ошибка'))
             }
         }
 
         return {
             publication,
+            publicationIsDeleted,
             removePublication
         }
     }

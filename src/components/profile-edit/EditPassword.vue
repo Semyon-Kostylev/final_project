@@ -71,17 +71,24 @@
                     Сохранить
                 </a-button>
             </a-form-item>
-
-            <p class="form__message" ref="invalidMessage">{{ formState.formMessage }}</p>
         </a-form>
     </div>
 </template>
 <script>
 import { defineComponent, reactive, ref } from 'vue'
-import users from '@/data/users'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { notification } from 'ant-design-vue'
 
 export default defineComponent({
     setup() {
+        const router = useRouter()
+        const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+
+        if (!currentUser) {
+            router.push({ name: 'authorization' })
+        }
+
         const formState = reactive({
             oldPassword: '',
             newPassword: '',
@@ -91,37 +98,64 @@ export default defineComponent({
 
         const invalidMessage = ref(null)
 
+        const openNotificationWithIcon = (type) => {
+            notification[type]({
+                message: formState.formMessage
+            })
+        }
+
         const onFinish = () => {
-            if (formState.oldPassword !== users[0].password) {
+            if (formState.oldPassword !== currentUser.password) {
                 formState.formMessage = 'Вы ввели неверный текущий пароль'
+                openNotificationWithIcon('error')
                 return
             }
 
             if (formState.oldPassword === formState.newPassword) {
                 formState.formMessage = 'Текущий пароль и новый пароль не должны совпадать'
+                openNotificationWithIcon('error')
                 return
             }
 
             if (formState.newPassword.length < 5) {
                 formState.formMessage = 'Длина нового пароля должна быть не менее 5 символов'
+                openNotificationWithIcon('error')
                 return
             }
 
             if (formState.newPassword !== formState.repeatNewPassword) {
                 formState.formMessage = 'Вы ввели два разных новых пароля'
+                openNotificationWithIcon('error')
                 return
             }
 
-            invalidMessage.value.style.color = 'green'
+            currentUser.password = formState.repeatNewPassword
 
-            formState.formMessage = 'Пароль успешно изменён!'
-            users[0].password = formState.newPassword
+            axios
+                .put(
+                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
+                    {
+                        password: currentUser.password
+                    }
+                )
+                .then(() => {
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser))
+                    formState.formMessage = 'Пароль успешно изменён!'
+                    openNotificationWithIcon('success')
+                    formState.oldPassword = ''
+                    formState.newPassword = ''
+                    formState.repeatNewPassword = ''
+                })
+                .catch(() => {
+                    console.log('ошибка')
+                })
         }
 
         return {
             formState,
             invalidMessage,
-            onFinish
+            onFinish,
+            currentUser
         }
     }
 })
@@ -149,10 +183,6 @@ export default defineComponent({
 
     &__input-last {
         margin-bottom: 20px;
-    }
-
-    &__message {
-        color: red;
     }
 }
 
