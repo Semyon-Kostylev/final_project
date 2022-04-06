@@ -12,12 +12,12 @@
                 <a-form-item class="form__input form-input" name="firstname">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.firstname"
+                        v-model:value="formState.lastname"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.firstname }"
+                        :class="{ 'input-base__valid': formState.lastname }"
                     >
                         Фамилия
                     </div>
@@ -26,12 +26,12 @@
                 <a-form-item class="form__input form-input" name="middlename">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.middlename"
+                        v-model:value="formState.firstname"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.middlename }"
+                        :class="{ 'input-base__valid': formState.firstname }"
                     >
                         Имя
                     </div>
@@ -40,12 +40,12 @@
                 <a-form-item class="form__input form__input-last form-input" name="lastname">
                     <a-input
                         class="form-input__input input-base"
-                        v-model:value="formState.lastname"
+                        v-model:value="formState.middlename"
                     >
                     </a-input>
                     <div
                         class="form-input__placeholder"
-                        :class="{ 'input-base__valid': formState.lastname }"
+                        :class="{ 'input-base__valid': formState.middlename }"
                     >
                         Отчество
                     </div>
@@ -75,30 +75,18 @@
 </template>
 <script>
 import { defineComponent, reactive } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { notification } from 'ant-design-vue'
+import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
 export default defineComponent({
     setup() {
-        const router = useRouter()
         const currentUser = reactive(JSON.parse(localStorage['currentUser']))
-
-        if (!currentUser) {
-            router.push({ name: 'authorization' })
-        }
 
         const formState = reactive({
             firstname: currentUser.firstname,
             middlename: currentUser.middlename,
             lastname: currentUser.lastname
         })
-
-        const openNotificationWithIcon = (type) => {
-            notification[type]({
-                message: 'Данные успешно изменены!'
-            })
-        }
 
         const onFinish = () => {
             if (
@@ -132,8 +120,8 @@ export default defineComponent({
                 )
                 .then(() => {
                     localStorage.setItem('currentUser', JSON.stringify(currentUser))
-                    openNotificationWithIcon('success')
-                    setTimeout(() => location.reload(), 4000)
+                    openNotificationWithIcon('success', 'Данные успешно изменены! Ожидайте...')
+                    setTimeout(() => location.reload(), 2000)
                 })
                 .catch(() => {
                     console.log('ошибка')

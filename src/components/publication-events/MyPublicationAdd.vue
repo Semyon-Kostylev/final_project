@@ -4,7 +4,7 @@
         <a-modal
             class="publication-edit__modal"
             v-model:visible="visible"
-            title="Редактировать публикацию"
+            title="Добавить публикацию"
             @ok="handleOk"
         >
             <a-textarea
@@ -26,11 +26,7 @@
 import { defineComponent, ref } from 'vue'
 import axios from 'axios'
 export default defineComponent({
-    props: {
-        publication: Object
-    },
-
-    setup(props) {
+    setup() {
         const visible = ref(false)
 
         const showModal = () => {
@@ -38,32 +34,25 @@ export default defineComponent({
         }
 
         const handleOk = () => {
-            if (
-                title.value === props.publication.title &&
-                description.value === props.publication.description
-            ) {
+            if (!title.value || !description.value) {
                 return
             }
 
             axios
-                .put(
-                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${props.publication.id}`,
-                    {
-                        title: title.value,
-                        oldDate: props.publication.oldDate,
-                        newDate: currentDate,
-                        date: `${props.publication.oldDate} (изменено ${currentDate})`,
-                        description: description.value
-                    }
-                )
+                .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications', {
+                    title: title.value,
+                    oldDate: currentDate,
+                    date: currentDate,
+                    description: description.value
+                })
                 .then(() => location.reload())
                 .catch(() => {
                     console.log('error')
                 })
         }
         const currentDate = new Date().toLocaleDateString()
-        const title = ref(props.publication.title)
-        const description = ref(props.publication.description)
+        const title = ref('')
+        const description = ref('')
 
         return {
             visible,

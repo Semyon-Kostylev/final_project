@@ -80,10 +80,6 @@
                 </a-button>
             </a-form-item>
 
-            <p class="login-form__invalid" ref="invalidMessage" v-if="isInvalid.isActive">
-                {{ isInvalid.message }}
-            </p>
-
             <a-form-item class="login-form__link authorization-link">
                 <router-link class="link-black" :to="{ name: 'authorization' }"
                     >Уже регистрировались?
@@ -97,6 +93,7 @@ import { defineComponent, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import BaseAgreement from '@/components/agreements/BaseAgreement.vue'
+import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
 export default defineComponent({
     components: {
@@ -120,26 +117,21 @@ export default defineComponent({
             .then((response) => (users.value = response.data))
             .catch(() => console.log('ошибка'))
 
-        const isInvalid = reactive({
-            isActive: false,
-            message: ''
-        })
-
-        const invalidMessage = ref(null)
+        const invalidMessage = ref('')
 
         // Методы регистрации
         const onFinish = (values) => {
-            isInvalid.isActive = true
-
             const findUser = users.value.find((user) => user.email === values.email)
 
             if (findUser) {
-                isInvalid.message = 'Пользователь с таким Email уже существует'
+                invalidMessage.value = 'Пользователь с таким Email уже существует'
+                openNotificationWithIcon('error', invalidMessage.value)
                 return
             }
 
             if (values.password.length < 5) {
-                isInvalid.message = 'Длина пароля должна быть не менее 5 символов'
+                invalidMessage.value = 'Длина пароля должна быть не менее 5 символов'
+                openNotificationWithIcon('error', invalidMessage.value)
                 return
             }
 
@@ -152,8 +144,8 @@ export default defineComponent({
                     password: formState.password
                 })
                 .then(() => {
-                    invalidMessage.value.style.color = 'green'
-                    isInvalid.message = 'Вы успешно зарегистрировались! Ожидайте...'
+                    invalidMessage.value = 'Вы успешно зарегистрировались! Ожидайте...'
+                    openNotificationWithIcon('success', invalidMessage.value)
                     setTimeout(() => router.push({ name: 'authorization' }), 2000)
                 })
                 .catch(() => {
@@ -163,7 +155,6 @@ export default defineComponent({
 
         return {
             formState,
-            isInvalid,
             modalState,
             onFinish,
             invalidMessage,

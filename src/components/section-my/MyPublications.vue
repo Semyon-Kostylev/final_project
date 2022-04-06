@@ -4,7 +4,7 @@
             <h1 class="publications__title">Мои публикации</h1>
             <a-button class="publications__add-button btn" type="primary">
                 Добавить
-                <my-publication-edit class="publications__edit" />
+                <my-publication-add class="publications__edit" />
             </a-button>
         </div>
 
@@ -31,7 +31,7 @@
         <ul class="publications__list list">
             <li
                 class="list__item"
-                v-for="publication in filteredPublications"
+                v-for="publication in paginatedPublications"
                 :key="publication.id"
             >
                 <article class="list__article publication">
@@ -57,7 +57,10 @@
                         <div class="publication__wrapper">
                             <span class="publication__date">{{ publication.date }}</span>
                             <button class="publication__button">
-                                <my-publication-edit class="publications__edit" />
+                                <my-publication-edit
+                                    class="publications__edit"
+                                    :publication="publication"
+                                />
                                 <form-outlined class="publication__icon" />
                             </button>
                         </div>
@@ -66,27 +69,29 @@
             </li>
         </ul>
 
-        <a-button
-            class="publications__more btn"
-            @click="downloadMorePublication"
-            v-show="buttonIsVisible"
-            type="primary"
-        >
-            Ещё
-        </a-button>
+        <a-pagination
+            class="publications__pagination"
+            v-if="filteredPublications.length >= publicationPerPage"
+            v-model:current="currentPage"
+            :total="filteredPublications.length"
+            show-less-items
+            :defaultPageSize="publicationPerPage"
+        />
     </div>
 </template>
 
 <script>
+import { defineComponent, ref, computed } from 'vue'
 import { SearchOutlined, FormOutlined } from '@ant-design/icons-vue'
-import { computed, defineComponent, onUpdated, ref } from 'vue'
 import axios from 'axios'
+import MyPublicationAdd from '@/components/publication-events/MyPublicationAdd.vue'
 import MyPublicationEdit from '@/components/publication-events/MyPublicationEdit.vue'
 
 export default defineComponent({
     components: {
         SearchOutlined,
         FormOutlined,
+        MyPublicationAdd,
         MyPublicationEdit
     },
 
@@ -94,17 +99,14 @@ export default defineComponent({
         const publications = ref([])
         axios
             .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
-            .then((response) => (publications.value = response.data))
+            .then((response) => (publications.value = response.data.reverse()))
             .catch(() => console.log('ошибка'))
-
-        const buttonIsVisible = ref(true)
 
         const searchInput = ref('')
         const isSearchInputOpen = ref(false)
-        const isStartIndexOfPublication = ref(0)
-        const isPublicationOnLoad = ref(9)
 
-        const addPublication = ref(false)
+        const currentPage = ref(1)
+        const publicationPerPage = ref(9)
 
         const filteredPublications = computed(() => {
             if (searchInput.value) {
@@ -112,36 +114,25 @@ export default defineComponent({
                     publication.title.includes(searchInput.value)
                 )
             }
-
-            return publications.value.slice(
-                isStartIndexOfPublication.value,
-                isPublicationOnLoad.value
-            )
+            return publications.value
         })
 
-        const downloadMorePublication = () => {
-            isPublicationOnLoad.value += 9
-        }
-
-        onUpdated(() => {
-            if (
-                filteredPublications.value.length === publications.value.length ||
-                filteredPublications.value.length < 9
-            ) {
-                buttonIsVisible.value = false
-            } else {
-                buttonIsVisible.value = true
-            }
+        const paginatedPublications = computed(() => {
+            const startIndex = (currentPage.value - 1) * publicationPerPage.value
+            return filteredPublications.value.slice(
+                startIndex,
+                startIndex + publicationPerPage.value
+            )
         })
 
         return {
             publications,
-            buttonIsVisible,
             searchInput,
             isSearchInputOpen,
-            filteredPublications,
-            addPublication,
-            downloadMorePublication
+            currentPage,
+            publicationPerPage,
+            paginatedPublications,
+            filteredPublications
         }
     }
 })
@@ -189,7 +180,7 @@ export default defineComponent({
         margin-bottom: 45px !important;
     }
 
-    &__more {
+    &__pagination {
         justify-self: center;
     }
 }

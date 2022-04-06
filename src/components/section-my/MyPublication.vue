@@ -13,18 +13,23 @@
             <div class="publication__wrapper">
                 <img class="publication__image" :src="publication.image" :alt="publication.title" />
                 <div class="publication__btn-group">
-                    <a-button class="publication__btn btn" type="primary"> Редактировать </a-button>
-
-                    <a-button
-                        class="publication__btn btn"
-                        @click="removePublication"
-                        type="primary"
-                    >
-                        Удалить
+                    <a-button class="publication__btn btn" type="primary">
+                        Редактировать
+                        <my-publication-detail-edit class="publication__edit" />
                     </a-button>
+
+                    <a-popconfirm
+                        title="Вы уверены, что хотите удалить публикацию?"
+                        ok-text="Да"
+                        cancel-text="Отмена"
+                        @confirm="removePublication"
+                        @cancel="cancel"
+                    >
+                        <a-button class="publication__btn btn" type="primary"> Удалить </a-button>
+                    </a-popconfirm>
                 </div>
             </div>
-            <div class="publication__description" v-html="publication.description"></div>
+            <div class="publication__description">{{ publication.description }}</div>
         </div>
     </div>
 </template>
@@ -33,12 +38,17 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { message } from 'ant-design-vue'
+import MyPublicationDetailEdit from '@/components/publication-events/MyPublicationDetailEdit.vue'
 
 export default {
+    components: {
+        MyPublicationDetailEdit
+    },
+
     setup() {
         const route = useRoute()
-
-        const publication = ref({})
+        const publication = ref([])
         const publicationIsDeleted = ref(false)
 
         axios
@@ -48,24 +58,29 @@ export default {
             .then((response) => (publication.value = response.data))
             .catch(() => console.log('ошибка'))
 
+        const cancel = () => {
+            return
+        }
+
         const removePublication = () => {
-            if (window.confirm('Вы уверены?')) {
-                axios
-                    .delete(
-                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
-                    )
-                    .then(() => {
-                        publication.value = null
-                        publicationIsDeleted.value = true
-                    })
-                    .catch(() => console.log('ошибка'))
-            }
+            axios
+                .delete(
+                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                )
+                .then(() => {
+                    publication.value = null
+                    publicationIsDeleted.value = true
+                    message.success('Публикация успешно удалена')
+                })
+                .catch(() => console.log('ошибка'))
         }
 
         return {
             publication,
             publicationIsDeleted,
-            removePublication
+            removePublication,
+            confirm,
+            cancel
         }
     }
 }
@@ -114,6 +129,19 @@ export default {
         display: grid;
         row-gap: 20px;
         height: max-content;
+    }
+
+    &__btn {
+        position: relative;
+    }
+
+    &__edit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1;
     }
 
     &__description {

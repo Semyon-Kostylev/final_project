@@ -31,10 +31,6 @@
                 </div>
             </a-form-item>
 
-            <p class="login-form__message" v-if="formState.formMessage">
-                {{ formState.formMessage }}
-            </p>
-
             <a-form-item class="login-form__submit submit">
                 <a-button
                     type="primary"
@@ -55,6 +51,7 @@
 </template>
 <script>
 import { defineComponent, reactive } from 'vue'
+import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
 export default defineComponent({
     setup() {
@@ -66,6 +63,7 @@ export default defineComponent({
         const onFinish = () => {
             formState.formMessage =
                 'На указанный адрес электронной почты отправлена инструкция о восстановлении пароля'
+            openNotificationWithIcon('success', formState.formMessage)
         }
 
         return {

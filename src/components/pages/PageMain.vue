@@ -34,18 +34,28 @@
 
                     <div v-if="userModal" class="user__modal user-modal">
                         <ul class="user-modal__list">
-                            <li
-                                class="user-modal__item"
-                                v-for="userModalLink in userModalLinks"
-                                :key="userModalLink.id"
-                            >
+                            <li class="user-modal__item">
                                 <router-link
                                     class="user-modal__link link-black"
                                     @click="userModal = false"
-                                    :to="{ name: userModalLink.urlName }"
+                                    :to="{ name: 'user' }"
                                 >
-                                    {{ userModalLink.title }}
+                                    Профиль
                                 </router-link>
+                            </li>
+                            <li class="user-modal__item">
+                                <router-link
+                                    class="user-modal__link link-black"
+                                    @click="userModal = false"
+                                    :to="{ name: 'password' }"
+                                >
+                                    Изменение пароля
+                                </router-link>
+                            </li>
+                            <li class="user-modal__item">
+                                <a class="user-modal__link link-black" @click="leaveFromAccount">
+                                    Выход
+                                </a>
                             </li>
                         </ul>
                     </div>
@@ -89,6 +99,8 @@ import users from '@/data/users'
 
 export default {
     setup() {
+        const router = useRouter()
+
         const currentUser = reactive(JSON.parse(localStorage['currentUser']))
 
         const headerNavLinks = [
@@ -102,14 +114,6 @@ export default {
             { title: 'Мои комментарии', id: 3, urlName: 'my-comments' }
         ]
 
-        const userModalLinks = [
-            { id: 1, title: 'Профиль', urlName: 'user' },
-            { id: 2, title: 'Изменение пароля', urlName: 'password' },
-            { id: 3, title: 'Выход', urlName: 'authorization' }
-        ]
-
-        const router = useRouter()
-
         const goTolink = (link) => {
             router.push(link.urlName)
         }
@@ -120,15 +124,20 @@ export default {
             userModal.value = !userModal.value
         }
 
+        const leaveFromAccount = () => {
+            localStorage.removeItem('currentUser')
+            router.push({ name: 'authorization' })
+        }
+
         return {
             currentUser,
             siderNavLinks,
             headerNavLinks,
-            userModalLinks,
             goTolink,
             userModal,
             openUserModal,
-            users
+            users,
+            leaveFromAccount
         }
     }
 }

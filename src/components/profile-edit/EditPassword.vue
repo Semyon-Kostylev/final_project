@@ -75,10 +75,10 @@
     </div>
 </template>
 <script>
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import { notification } from 'ant-design-vue'
+import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
 export default defineComponent({
     setup() {
@@ -96,36 +96,28 @@ export default defineComponent({
             formMessage: ''
         })
 
-        const invalidMessage = ref(null)
-
-        const openNotificationWithIcon = (type) => {
-            notification[type]({
-                message: formState.formMessage
-            })
-        }
-
         const onFinish = () => {
             if (formState.oldPassword !== currentUser.password) {
                 formState.formMessage = 'Вы ввели неверный текущий пароль'
-                openNotificationWithIcon('error')
+                openNotificationWithIcon('error', formState.formMessage)
                 return
             }
 
             if (formState.oldPassword === formState.newPassword) {
                 formState.formMessage = 'Текущий пароль и новый пароль не должны совпадать'
-                openNotificationWithIcon('error')
+                openNotificationWithIcon('error', formState.formMessage)
                 return
             }
 
             if (formState.newPassword.length < 5) {
                 formState.formMessage = 'Длина нового пароля должна быть не менее 5 символов'
-                openNotificationWithIcon('error')
+                openNotificationWithIcon('error', formState.formMessage)
                 return
             }
 
             if (formState.newPassword !== formState.repeatNewPassword) {
                 formState.formMessage = 'Вы ввели два разных новых пароля'
-                openNotificationWithIcon('error')
+                openNotificationWithIcon('error', formState.formMessage)
                 return
             }
 
@@ -141,7 +133,7 @@ export default defineComponent({
                 .then(() => {
                     localStorage.setItem('currentUser', JSON.stringify(currentUser))
                     formState.formMessage = 'Пароль успешно изменён!'
-                    openNotificationWithIcon('success')
+                    openNotificationWithIcon('success', formState.formMessage)
                     formState.oldPassword = ''
                     formState.newPassword = ''
                     formState.repeatNewPassword = ''
@@ -153,7 +145,6 @@ export default defineComponent({
 
         return {
             formState,
-            invalidMessage,
             onFinish,
             currentUser
         }

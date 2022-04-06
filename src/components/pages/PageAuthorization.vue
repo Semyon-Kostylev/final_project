@@ -61,8 +61,6 @@
                 </a-button>
             </a-form-item>
 
-            <p class="login-form__invalid" v-if="isInvalid">Неверный Email или пароль</p>
-
             <a-form-item class="login-form__link authorization-link">
                 <router-link class="link-black" :to="{ name: 'registration' }">
                     Ещё нет учётной записи?
@@ -75,6 +73,7 @@
 import { defineComponent, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
 export default defineComponent({
     setup() {
@@ -91,7 +90,7 @@ export default defineComponent({
             password: ''
         })
 
-        const isInvalid = ref(false)
+        const invalidMessage = ref('')
 
         const onFinish = (values) => {
             let currentUser
@@ -106,13 +105,13 @@ export default defineComponent({
                 localStorage.setItem('currentUser', JSON.stringify(currentUser))
                 router.push({ name: 'user' })
             } else {
-                isInvalid.value = true
+                invalidMessage.value = 'Неверный Email или пароль'
+                openNotificationWithIcon('error', invalidMessage.value)
             }
         }
 
         return {
             formState,
-            isInvalid,
             onFinish
         }
     }
