@@ -29,8 +29,8 @@
                         />
                     </div>
                     <div class="user__link" @click="openUserModal" @keydown="openUserModal">
-                        {{ currentUser.firstname ? currentUser.firstname : '' }}
-                        {{ currentUser.lastname ? currentUser.lastname : '' }}
+                        {{ currentUser.firstname }}
+                        {{ currentUser.lastname }}
                     </div>
 
                     <div v-if="userModal" class="user__modal user-modal">
@@ -86,7 +86,7 @@
             </aside>
 
             <div class="main__content content">
-                <router-view />
+                <router-view @edit-user="editUser" />
                 <router-view name="password" />
             </div>
         </section>
@@ -136,6 +136,13 @@
                 router.push({ name: 'authorization' })
             }
 
+            const editUser = () => {
+                const changedUser = JSON.parse(localStorage['currentUser'])
+                currentUser.firstname = changedUser.firstname
+                currentUser.middlename = changedUser.middlename
+                currentUser.lastname = changedUser.lastname
+            }
+
             return {
                 currentUser,
                 siderNavLinks,
@@ -143,7 +150,8 @@
                 goTolink,
                 userModal,
                 openUserModal,
-                leaveFromAccount
+                leaveFromAccount,
+                editUser
             }
         }
     }

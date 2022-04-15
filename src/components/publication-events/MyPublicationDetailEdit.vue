@@ -27,7 +27,7 @@
     import axios from 'axios'
     import { useRoute } from 'vue-router'
     export default defineComponent({
-        setup() {
+        setup(props, context) {
             const route = useRoute()
             const visible = ref(false)
 
@@ -67,7 +67,10 @@
                             description: description.value
                         }
                     )
-                    .then(() => window.location.reload())
+                    .then(() => {
+                        visible.value = false
+                        context.emit('editPublication')
+                    })
                     .catch()
             }
             const currentDate = new Date().toLocaleDateString()

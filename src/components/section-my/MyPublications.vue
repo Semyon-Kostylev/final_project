@@ -60,6 +60,7 @@
                                 <my-publication-edit
                                     class="publications__edit"
                                     :publication="publication"
+                                    @edit-publication="editPublications"
                                 />
                                 <form-outlined class="publication__icon" />
                             </button>
@@ -125,6 +126,13 @@
                 )
             })
 
+            const editPublications = () => {
+                axios
+                    .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
+                    .then(response => (publications.value = response.data.reverse()))
+                    .catch()
+            }
+
             return {
                 publications,
                 searchInput,
@@ -132,7 +140,8 @@
                 currentPage,
                 publicationPerPage,
                 paginatedPublications,
-                filteredPublications
+                filteredPublications,
+                editPublications
             }
         }
     })

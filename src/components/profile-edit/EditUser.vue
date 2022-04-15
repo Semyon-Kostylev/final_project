@@ -80,7 +80,7 @@
     import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
     export default defineComponent({
-        setup() {
+        setup(props, context) {
             const router = useRouter()
 
             const currentUser = localStorage['currentUser']
@@ -131,7 +131,7 @@
                     .then(() => {
                         localStorage.setItem('currentUser', JSON.stringify(currentUser))
                         openNotificationWithIcon('success', 'Данные успешно изменены!')
-                        setTimeout(() => window.location.reload(), 2000)
+                        context.emit('editUser')
                     })
                     .catch()
             }

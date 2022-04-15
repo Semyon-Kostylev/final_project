@@ -45,7 +45,7 @@
             </a-form-item>
 
             <a-form-item
-                class="login-form__input login-form__input-last form-input"
+                class="form__input form__input-last form-input"
                 name="repeatNewPassword"
                 :rules="[{ required: true, message: 'Повторите новый пароль' }]"
             >

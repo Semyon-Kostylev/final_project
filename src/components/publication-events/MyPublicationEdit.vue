@@ -30,7 +30,7 @@
             publication: Object
         },
 
-        setup(props) {
+        setup(props, context) {
             const visible = ref(false)
 
             const showModal = () => {
@@ -56,7 +56,10 @@
                             description: description.value
                         }
                     )
-                    .then(() => window.location.reload())
+                    .then(() => {
+                        visible.value = false
+                        context.emit('editPublication')
+                    })
                     .catch()
             }
             const currentDate = new Date().toLocaleDateString()

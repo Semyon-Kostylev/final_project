@@ -15,7 +15,10 @@
                 <div class="publication__btn-group">
                     <a-button class="publication__btn btn" type="primary">
                         Редактировать
-                        <my-publication-detail-edit class="publication__edit" />
+                        <my-publication-detail-edit
+                            class="publication__edit"
+                            @edit-publication="editPublication"
+                        />
                     </a-button>
 
                     <a-popconfirm
@@ -75,12 +78,22 @@
                     .catch()
             }
 
+            const editPublication = () => {
+                axios
+                    .get(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                    )
+                    .then(response => (publication.value = response.data))
+                    .catch()
+            }
+
             return {
                 publication,
                 publicationIsDeleted,
                 removePublication,
                 confirm,
-                cancel
+                cancel,
+                editPublication
             }
         }
     }
