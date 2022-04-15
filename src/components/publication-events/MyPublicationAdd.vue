@@ -23,60 +23,58 @@
     </div>
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
-import axios from 'axios'
-export default defineComponent({
-    setup() {
-        const visible = ref(false)
+    import { defineComponent, ref } from 'vue'
+    import axios from 'axios'
+    export default defineComponent({
+        setup() {
+            const visible = ref(false)
 
-        const showModal = () => {
-            visible.value = true
-        }
-
-        const handleOk = () => {
-            if (!title.value || !description.value) {
-                return
+            const showModal = () => {
+                visible.value = true
             }
 
-            axios
-                .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications', {
-                    title: title.value,
-                    oldDate: currentDate,
-                    date: currentDate,
-                    description: description.value
-                })
-                .then(() => location.reload())
-                .catch(() => {
-                    console.log('error')
-                })
-        }
-        const currentDate = new Date().toLocaleDateString()
-        const title = ref('')
-        const description = ref('')
+            const handleOk = () => {
+                if (!title.value || !description.value) {
+                    return
+                }
 
-        return {
-            visible,
-            showModal,
-            handleOk,
-            title,
-            description
+                axios
+                    .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications', {
+                        title: title.value,
+                        oldDate: currentDate,
+                        date: currentDate,
+                        description: description.value
+                    })
+                    .then(() => window.location.reload())
+                    .catch()
+            }
+            const currentDate = new Date().toLocaleDateString()
+            const title = ref('')
+            const description = ref('')
+
+            return {
+                visible,
+                showModal,
+                handleOk,
+                title,
+                description
+            }
         }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.publication-edit {
-    &__btn {
-        width: 100%;
-        height: 100%;
-    }
-    &__area {
-        padding: 10px;
-        margin-bottom: 30px;
-        &:last-child {
-            margin-bottom: 0;
+    .publication-edit {
+        &__btn {
+            width: 100%;
+            height: 100%;
+        }
+        &__area {
+            padding: 10px;
+            margin-bottom: 30px;
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
-}
 </style>

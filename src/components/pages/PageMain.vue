@@ -29,7 +29,8 @@
                         />
                     </div>
                     <div class="user__link" @click="openUserModal" @keydown="openUserModal">
-                        {{ currentUser.firstname }} {{ currentUser.lastname }}
+                        {{ currentUser.firstname ? currentUser.firstname : '' }}
+                        {{ currentUser.lastname ? currentUser.lastname : '' }}
                     </div>
 
                     <div v-if="userModal" class="user__modal user-modal">
@@ -93,231 +94,236 @@
 </template>
 
 <script>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import users from '@/data/users'
+    import { ref, reactive } from 'vue'
+    import { useRouter } from 'vue-router'
 
-export default {
-    setup() {
-        const router = useRouter()
+    export default {
+        setup() {
+            const router = useRouter()
 
-        const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+            const currentUser = localStorage['currentUser']
+                ? reactive(JSON.parse(localStorage['currentUser']))
+                : null
 
-        const headerNavLinks = [
-            { title: 'Публикации', id: 1, urlName: 'publications' },
-            { title: 'Авторы', id: 2, urlName: 'authors' }
-        ]
+            if (currentUser === null) {
+                router.push({ name: 'authorization' })
+                return
+            }
 
-        const siderNavLinks = [
-            { title: 'Мои публикации', id: 1, urlName: 'my-publications' },
-            { title: 'Мои лайки', id: 2, urlName: 'my-likes' },
-            { title: 'Мои комментарии', id: 3, urlName: 'my-comments' }
-        ]
+            const headerNavLinks = [
+                { title: 'Публикации', id: 1, urlName: 'publications' },
+                { title: 'Авторы', id: 2, urlName: 'authors' }
+            ]
 
-        const goTolink = (link) => {
-            router.push(link.urlName)
-        }
+            const siderNavLinks = [
+                { title: 'Мои публикации', id: 1, urlName: 'my-publications' },
+                { title: 'Мои лайки', id: 2, urlName: 'my-likes' },
+                { title: 'Мои комментарии', id: 3, urlName: 'my-comments' }
+            ]
 
-        const userModal = ref(false)
+            const goTolink = link => {
+                router.push(link.urlName)
+            }
 
-        const openUserModal = () => {
-            userModal.value = !userModal.value
-        }
+            const userModal = ref(false)
 
-        const leaveFromAccount = () => {
-            localStorage.removeItem('currentUser')
-            router.push({ name: 'authorization' })
-        }
+            const openUserModal = () => {
+                userModal.value = !userModal.value
+            }
 
-        return {
-            currentUser,
-            siderNavLinks,
-            headerNavLinks,
-            goTolink,
-            userModal,
-            openUserModal,
-            users,
-            leaveFromAccount
+            const leaveFromAccount = () => {
+                localStorage.removeItem('currentUser')
+                router.push({ name: 'authorization' })
+            }
+
+            return {
+                currentUser,
+                siderNavLinks,
+                headerNavLinks,
+                goTolink,
+                userModal,
+                openUserModal,
+                leaveFromAccount
+            }
         }
     }
-}
 </script>
 
 <style lang="scss" scoped>
-.profile {
-    display: grid;
-    grid-template-rows: max-content 1fr;
-    min-height: 100vh;
-    color: $black-color;
-}
+    .profile {
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        min-height: 100vh;
+        color: $black-color;
+    }
 
-.header {
-    width: 100%;
-    height: max-content;
-    border: 2px solid $gray-border-color;
-    background-color: $dark-white-color;
+    .header {
+        width: 100%;
+        height: max-content;
+        border: 2px solid $gray-border-color;
+        background-color: $dark-white-color;
 
-    &__container {
+        &__container {
+            display: flex;
+            align-items: center;
+            padding: 17px 98px 16px 26px;
+        }
+
+        &__logo {
+            margin-right: 139px;
+        }
+    }
+
+    .logo {
+        &__img {
+            width: 155px;
+            height: 60px;
+        }
+    }
+
+    .nav {
+        margin-right: auto;
+
+        &__list {
+            @include list-reset;
+            display: flex;
+            margin: 0;
+        }
+
+        &__item {
+            margin-right: 46px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+
+        &__link {
+            font-size: 16px;
+            line-height: normal;
+            text-decoration: underline;
+            transition: opacity 0.2s ease-in-out;
+
+            &:hover,
+            &:focus,
+            &:active {
+                opacity: 0.6;
+                color: $dark-grey-color;
+            }
+        }
+    }
+
+    .user {
+        position: relative;
         display: flex;
         align-items: center;
-        padding: 17px 98px 16px 26px;
-    }
 
-    &__logo {
-        margin-right: 139px;
-    }
-}
+        &__photo {
+            margin-right: 15px;
+            cursor: pointer;
+        }
 
-.logo {
-    &__img {
-        width: 155px;
-        height: 60px;
-    }
-}
+        &__img {
+            width: 46px;
+            height: 42px;
+        }
 
-.nav {
-    margin-right: auto;
+        &__link {
+            font-size: 15px;
+            height: max-content;
+            text-decoration: underline;
+            cursor: pointer;
+        }
 
-    &__list {
-        @include list-reset;
-        display: flex;
-        margin: 0;
-    }
-
-    &__item {
-        margin-right: 46px;
-
-        &:last-child {
-            margin-right: 0;
+        &__modal {
+            position: absolute;
+            top: 138%;
+            left: -15%;
+            z-index: 1;
         }
     }
 
-    &__link {
-        font-size: 16px;
-        line-height: normal;
-        text-decoration: underline;
-        transition: opacity 0.2s ease-in-out;
-
-        &:hover,
-        &:focus,
-        &:active {
-            opacity: 0.6;
-            color: $dark-grey-color;
-        }
-    }
-}
-
-.user {
-    position: relative;
-    display: flex;
-    align-items: center;
-
-    &__photo {
-        margin-right: 15px;
-        cursor: pointer;
-    }
-
-    &__img {
-        width: 46px;
-        height: 42px;
-    }
-
-    &__link {
-        font-size: 15px;
-        height: max-content;
-        text-decoration: underline;
-        cursor: pointer;
-    }
-
-    &__modal {
-        position: absolute;
-        top: 138%;
-        left: -15%;
-        z-index: 1;
-    }
-}
-
-.user-modal {
-    width: 219px;
-    padding: 15px 20px 9px;
-    border: 1px solid $main-border-color;
-    border-radius: 5px;
-    background-color: $main-bg-color;
-
-    &::before {
-        content: '';
-        position: absolute;
-        left: 40px;
-        top: -8px;
-        width: 15px;
-        height: 15px;
-        border-top: 1px solid $main-border-color;
-        border-left: 1px solid $main-border-color;
-        transform: rotate(45deg);
+    .user-modal {
+        width: 219px;
+        padding: 15px 20px 9px;
+        border: 1px solid $main-border-color;
+        border-radius: 5px;
         background-color: $main-bg-color;
-    }
 
-    &__list {
-        @include list-reset;
-    }
+        &::before {
+            content: '';
+            position: absolute;
+            left: 40px;
+            top: -8px;
+            width: 15px;
+            height: 15px;
+            border-top: 1px solid $main-border-color;
+            border-left: 1px solid $main-border-color;
+            transform: rotate(45deg);
+            background-color: $main-bg-color;
+        }
 
-    &__item {
-        margin-bottom: 15 px;
-        &:last-child {
-            margin-bottom: 0;
+        &__list {
+            @include list-reset;
+        }
+
+        &__item {
+            margin-bottom: 15 px;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        &__link {
+            font-size: 16px;
         }
     }
 
-    &__link {
-        font-size: 16px;
-    }
-}
-
-.main {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-}
-
-.sider {
-    padding: 28px 44px;
-    background-color: $sider-bg-color;
-}
-
-.sider-nav {
-    &__list {
-        @include list-reset;
+    .main {
+        display: grid;
+        grid-template-columns: 280px 1fr;
     }
 
-    &__item {
-        margin-bottom: 20px;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 37px;
-        color: $dark-black-color;
+    .sider {
+        padding: 28px 44px;
+        background-color: $sider-bg-color;
+    }
 
-        &:last-child {
-            margin-bottom: 0;
+    .sider-nav {
+        &__list {
+            @include list-reset;
+        }
+
+        &__item {
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 37px;
+            color: $dark-black-color;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        &__link {
+            transition: opacity 0.2s ease-in-out;
+
+            &:hover,
+            &:focus,
+            &:active {
+                opacity: 0.6;
+                color: $dark-grey-color;
+            }
+        }
+
+        &__mark {
+            text-align: center;
+            margin-right: 3px;
         }
     }
 
-    &__link {
-        transition: opacity 0.2s ease-in-out;
-
-        &:hover,
-        &:focus,
-        &:active {
-            opacity: 0.6;
-            color: $dark-grey-color;
-        }
+    .content {
+        padding: 47px 44px 50px;
     }
-
-    &__mark {
-        text-align: center;
-        margin-right: 3px;
-    }
-}
-
-.content {
-    padding: 47px 44px 50px;
-}
 </style>

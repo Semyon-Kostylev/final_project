@@ -89,178 +89,173 @@
     </div>
 </template>
 <script>
-import { defineComponent, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import BaseAgreement from '@/components/agreements/BaseAgreement.vue'
-import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import { defineComponent, reactive, ref } from 'vue'
+    import { useRouter } from 'vue-router'
+    import axios from 'axios'
+    import BaseAgreement from '@/components/agreements/BaseAgreement.vue'
+    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import getUsers from '@/composables/getUsers'
 
-export default defineComponent({
-    components: {
-        BaseAgreement
-    },
+    export default defineComponent({
+        components: {
+            BaseAgreement
+        },
 
-    setup() {
-        const router = useRouter()
+        setup() {
+            const router = useRouter()
 
-        const modalState = ref(false)
+            const modalState = ref(false)
 
-        // Данные форм
-        const formState = reactive({
-            email: '',
-            password: ''
-        })
+            // Данные форм
+            const formState = reactive({
+                email: '',
+                password: ''
+            })
 
-        const users = ref([])
-        axios
-            .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users')
-            .then((response) => (users.value = response.data))
-            .catch(() => console.log('ошибка'))
+            const invalidMessage = ref('')
 
-        const invalidMessage = ref('')
+            const { users } = getUsers()
 
-        // Методы регистрации
-        const onFinish = (values) => {
-            const findUser = users.value.find((user) => user.email === values.email)
+            // Методы регистрации
+            const onFinish = values => {
+                const findUser = users.value.find(user => user.email === values.email)
 
-            if (findUser) {
-                invalidMessage.value = 'Пользователь с таким Email уже существует'
-                openNotificationWithIcon('error', invalidMessage.value)
-                return
+                if (findUser) {
+                    invalidMessage.value = 'Пользователь с таким Email уже существует'
+                    openNotificationWithIcon('error', invalidMessage.value)
+                    return
+                }
+
+                if (values.password.length < 5) {
+                    invalidMessage.value = 'Длина пароля должна быть не менее 5 символов'
+                    openNotificationWithIcon('error', invalidMessage.value)
+                    return
+                }
+
+                axios
+                    .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users', {
+                        firstname: '',
+                        middlename: '',
+                        lastname: '',
+                        email: formState.email,
+                        password: formState.password
+                    })
+                    .then(() => {
+                        invalidMessage.value = 'Вы успешно зарегистрировались! Ожидайте...'
+                        openNotificationWithIcon('success', invalidMessage.value)
+                        setTimeout(() => router.push({ name: 'authorization' }), 2000)
+                    })
+                    .catch()
             }
 
-            if (values.password.length < 5) {
-                invalidMessage.value = 'Длина пароля должна быть не менее 5 символов'
-                openNotificationWithIcon('error', invalidMessage.value)
-                return
+            return {
+                formState,
+                modalState,
+                onFinish,
+                invalidMessage,
+                users
             }
-
-            axios
-                .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users', {
-                    firstname: '',
-                    middlename: '',
-                    lastname: '',
-                    email: formState.email,
-                    password: formState.password
-                })
-                .then(() => {
-                    invalidMessage.value = 'Вы успешно зарегистрировались! Ожидайте...'
-                    openNotificationWithIcon('success', invalidMessage.value)
-                    setTimeout(() => router.push({ name: 'authorization' }), 2000)
-                })
-                .catch(() => {
-                    console.log('ошибка')
-                })
         }
-
-        return {
-            formState,
-            modalState,
-            onFinish,
-            invalidMessage,
-            users
-        }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.modal-show {
-    z-index: 2;
-}
-
-.show-enter-active,
-.show-leave-active {
-    transition: opacity 0.5s ease;
-}
-
-.show-enter-from,
-.show-leave-to {
-    opacity: 0;
-}
-
-.registration {
-    padding: 100px;
-
-    &__logo {
-        margin: 0 auto 44px;
+    .modal-show {
+        z-index: 2;
     }
 
-    &__form {
-        margin: 0 auto;
+    .show-enter-active,
+    .show-leave-active {
+        transition: opacity 0.5s ease;
     }
-}
 
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 155px;
-    height: 60px;
-    border: 1px solid $main-border-color;
-    text-align: center;
-    font-size: 13px;
-}
+    .show-enter-from,
+    .show-leave-to {
+        opacity: 0;
+    }
 
-.login-form {
-    padding: 52px 67px 51px 68px;
-    width: 469px;
-    border: 1px solid $main-border-color;
+    .registration {
+        padding: 100px;
 
-    &__title {
+        &__logo {
+            margin: 0 auto 44px;
+        }
+
+        &__form {
+            margin: 0 auto;
+        }
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 155px;
+        height: 60px;
+        border: 1px solid $main-border-color;
         text-align: center;
-        margin-bottom: 1em;
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 13px;
     }
 
-    &__input {
-        margin-bottom: 15px;
+    .login-form {
+        padding: 52px 67px 51px 68px;
+        width: 469px;
+        border: 1px solid $main-border-color;
+
+        &__title {
+            text-align: center;
+            margin-bottom: 1em;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        &__input {
+            margin-bottom: 15px;
+        }
+
+        &__input-password {
+            margin-bottom: 30px;
+        }
+
+        &__description {
+            margin-bottom: 30px;
+        }
+
+        &__submit {
+            margin: 0 auto 20px;
+        }
+
+        &__invalid {
+            margin-bottom: 20px;
+            text-align: center;
+            color: red;
+        }
+
+        &__link {
+            margin: 0 auto;
+        }
     }
 
-    &__input-password {
-        margin-bottom: 30px;
+    .description-block {
+        &__description {
+            width: 270px;
+            font-size: 12px;
+        }
+
+        &__link {
+            font-size: 12px;
+        }
     }
 
-    &__description {
-        margin-bottom: 30px;
+    .submit {
+        width: max-content;
     }
 
-    &__submit {
-        margin: 0 auto 20px;
+    .authorization-link {
+        width: max-content;
     }
 
-    &__invalid {
-        margin-bottom: 20px;
-        text-align: center;
-        color: red;
+    .form-input {
+        position: relative;
     }
-
-    &__link {
-        margin: 0 auto;
-    }
-}
-
-.description-block {
-    &__description {
-        width: 270px;
-        font-size: 12px;
-    }
-
-    &__link {
-        font-size: 12px;
-    }
-}
-
-.submit {
-    width: max-content;
-}
-
-.authorization-link {
-    width: max-content;
-}
-
-.form-input {
-    position: relative;
-}
 </style>

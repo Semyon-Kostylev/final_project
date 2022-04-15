@@ -70,127 +70,124 @@
     </div>
 </template>
 <script>
-import { defineComponent, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import { defineComponent, reactive, ref } from 'vue'
+    import { useRouter } from 'vue-router'
+    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import getUsers from '@/composables/getUsers'
 
-export default defineComponent({
-    setup() {
-        const router = useRouter()
+    export default defineComponent({
+        setup() {
+            const router = useRouter()
 
-        const users = ref([])
-        axios
-            .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users')
-            .then((response) => (users.value = response.data))
-            .catch(() => console.log('ошибка'))
-
-        const formState = reactive({
-            email: '',
-            password: ''
-        })
-
-        const invalidMessage = ref('')
-
-        const onFinish = (values) => {
-            let currentUser
-
-            const findUser = users.value.find((user) => {
-                const valid = user.email === values.email && user.password === values.password
-                currentUser = user
-                return valid
+            const formState = reactive({
+                email: '',
+                password: ''
             })
 
-            if (findUser) {
-                localStorage.setItem('currentUser', JSON.stringify(currentUser))
-                router.push({ name: 'user' })
-            } else {
-                invalidMessage.value = 'Неверный Email или пароль'
-                openNotificationWithIcon('error', invalidMessage.value)
+            const invalidMessage = ref('')
+
+            const { users } = getUsers()
+
+            const onFinish = values => {
+                let currentUser
+
+                const findUser = users.value.find(user => {
+                    const valid = user.email === values.email && user.password === values.password
+                    currentUser = user
+                    return valid
+                })
+
+                if (findUser) {
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser))
+                    router.push({ name: 'user' })
+                } else {
+                    invalidMessage.value = 'Неверный Email или пароль'
+                    openNotificationWithIcon('error', invalidMessage.value)
+                }
+            }
+
+            return {
+                formState,
+                onFinish,
+                users
             }
         }
-
-        return {
-            formState,
-            onFinish
-        }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.authorization {
-    padding: 100px;
+    .authorization {
+        padding: 100px;
 
-    &__logo {
-        margin: 0 auto 44px;
+        &__logo {
+            margin: 0 auto 44px;
+        }
+
+        &__form {
+            margin: 0 auto;
+        }
     }
 
-    &__form {
-        margin: 0 auto;
-    }
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 155px;
-    height: 60px;
-    border: 1px solid $main-border-color;
-    text-align: center;
-    font-size: 13px;
-}
-
-.login-form {
-    padding: 52px 67px 51px 68px;
-    width: 469px;
-    border: 1px solid $main-border-color;
-
-    &__title {
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 155px;
+        height: 60px;
+        border: 1px solid $main-border-color;
         text-align: center;
-        margin-bottom: 1em;
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 13px;
     }
 
-    &__input {
-        margin-bottom: 15px;
+    .login-form {
+        padding: 52px 67px 51px 68px;
+        width: 469px;
+        border: 1px solid $main-border-color;
+
+        &__title {
+            text-align: center;
+            margin-bottom: 1em;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        &__input {
+            margin-bottom: 15px;
+        }
+
+        &__forget {
+            margin-left: auto;
+            margin-bottom: 27px;
+        }
+
+        &__submit {
+            margin: 0 auto 20px;
+        }
+
+        &__invalid {
+            margin-bottom: 20px;
+            text-align: center;
+            color: red;
+        }
+
+        &__link {
+            margin: 0 auto;
+        }
     }
 
-    &__forget {
-        margin-left: auto;
-        margin-bottom: 27px;
+    .forget-link {
+        width: max-content;
     }
 
-    &__submit {
-        margin: 0 auto 20px;
+    .submit {
+        width: max-content;
     }
 
-    &__invalid {
-        margin-bottom: 20px;
-        text-align: center;
-        color: red;
+    .authorization-link {
+        width: max-content;
     }
 
-    &__link {
-        margin: 0 auto;
+    .form-input {
+        position: relative;
     }
-}
-
-.forget-link {
-    width: max-content;
-}
-
-.submit {
-    width: max-content;
-}
-
-.authorization-link {
-    width: max-content;
-}
-
-.form-input {
-    position: relative;
-}
 </style>

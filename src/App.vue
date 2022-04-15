@@ -3,13 +3,13 @@
 </template>
 
 <script>
-export default {
-    name: 'App'
-}
+    export default {
+        name: 'App'
+    }
 </script>
 
 <style lang="scss">
-input::placeholder {
-    color: gray !important;
-}
+    input::placeholder {
+        color: gray !important;
+    }
 </style>

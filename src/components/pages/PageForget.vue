@@ -50,107 +50,107 @@
     </div>
 </template>
 <script>
-import { defineComponent, reactive } from 'vue'
-import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import { defineComponent, reactive } from 'vue'
+    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
-export default defineComponent({
-    setup() {
-        const formState = reactive({
-            userEmail: '',
-            formMessage: ''
-        })
+    export default defineComponent({
+        setup() {
+            const formState = reactive({
+                userEmail: '',
+                formMessage: ''
+            })
 
-        const onFinish = () => {
-            formState.formMessage =
-                'На указанный адрес электронной почты отправлена инструкция о восстановлении пароля'
-            openNotificationWithIcon('success', formState.formMessage)
+            const onFinish = () => {
+                formState.formMessage =
+                    'На указанный адрес электронной почты отправлена инструкция о восстановлении пароля'
+                openNotificationWithIcon('success', formState.formMessage)
+            }
+
+            return {
+                formState,
+                onFinish
+            }
         }
-
-        return {
-            formState,
-            onFinish
-        }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.forget-password {
-    padding: 100px;
+    .forget-password {
+        padding: 100px;
 
-    &__logo {
-        margin: 0 auto 44px;
+        &__logo {
+            margin: 0 auto 44px;
+        }
+
+        &__form {
+            margin: 0 auto;
+        }
     }
 
-    &__form {
-        margin: 0 auto;
-    }
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 155px;
-    height: 60px;
-    border: 1px solid $main-border-color;
-    text-align: center;
-    font-size: 13px;
-}
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-    padding: 52px 39px 51px 43px;
-    width: 469px;
-    border: 1px solid $main-border-color;
-
-    &__title {
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 155px;
+        height: 60px;
+        border: 1px solid $main-border-color;
         text-align: center;
-        margin-bottom: 1em;
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 13px;
     }
 
-    &__input {
-        margin: 0 auto 31px;
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        padding: 52px 39px 51px 43px;
+        width: 469px;
+        border: 1px solid $main-border-color;
+
+        &__title {
+            text-align: center;
+            margin-bottom: 1em;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        &__input {
+            margin: 0 auto 31px;
+        }
+
+        &__description {
+            margin-bottom: 29px;
+        }
+
+        &__message {
+            margin-bottom: 20px;
+            text-align: center;
+            color: green;
+        }
+
+        &__submit {
+            margin: 0 auto 19px;
+        }
+
+        &__link {
+            margin: 0 auto;
+        }
     }
 
-    &__description {
-        margin-bottom: 29px;
-    }
-
-    &__message {
-        margin-bottom: 20px;
+    .description {
+        font-size: 14px;
         text-align: center;
-        color: green;
+        line-height: 19px;
+        color: $black-color;
     }
 
-    &__submit {
-        margin: 0 auto 19px;
+    .submit {
+        width: max-content;
     }
 
-    &__link {
-        margin: 0 auto;
+    .forget-password-link {
+        width: max-content;
     }
-}
 
-.description {
-    font-size: 14px;
-    text-align: center;
-    line-height: 19px;
-    color: $black-color;
-}
-
-.submit {
-    width: max-content;
-}
-
-.forget-password-link {
-    width: max-content;
-}
-
-.form-input {
-    position: relative;
-}
+    .form-input {
+        position: relative;
+    }
 </style>

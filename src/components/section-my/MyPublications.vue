@@ -71,7 +71,7 @@
 
         <a-pagination
             class="publications__pagination"
-            v-if="filteredPublications.length >= publicationPerPage"
+            v-if="filteredPublications.length > publicationPerPage"
             v-model:current="currentPage"
             :total="filteredPublications.length"
             show-less-items
@@ -81,202 +81,202 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue'
-import { SearchOutlined, FormOutlined } from '@ant-design/icons-vue'
-import axios from 'axios'
-import MyPublicationAdd from '@/components/publication-events/MyPublicationAdd.vue'
-import MyPublicationEdit from '@/components/publication-events/MyPublicationEdit.vue'
+    import { defineComponent, ref, computed } from 'vue'
+    import { SearchOutlined, FormOutlined } from '@ant-design/icons-vue'
+    import axios from 'axios'
+    import MyPublicationAdd from '@/components/publication-events/MyPublicationAdd.vue'
+    import MyPublicationEdit from '@/components/publication-events/MyPublicationEdit.vue'
 
-export default defineComponent({
-    components: {
-        SearchOutlined,
-        FormOutlined,
-        MyPublicationAdd,
-        MyPublicationEdit
-    },
+    export default defineComponent({
+        components: {
+            SearchOutlined,
+            FormOutlined,
+            MyPublicationAdd,
+            MyPublicationEdit
+        },
 
-    setup() {
-        const publications = ref([])
-        axios
-            .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
-            .then((response) => (publications.value = response.data.reverse()))
-            .catch(() => console.log('ошибка'))
+        setup() {
+            const publications = ref([])
+            axios
+                .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
+                .then(response => (publications.value = response.data.reverse()))
+                .catch()
 
-        const searchInput = ref('')
-        const isSearchInputOpen = ref(false)
+            const searchInput = ref('')
+            const isSearchInputOpen = ref(false)
 
-        const currentPage = ref(1)
-        const publicationPerPage = ref(9)
+            const currentPage = ref(1)
+            const publicationPerPage = ref(9)
 
-        const filteredPublications = computed(() => {
-            if (searchInput.value) {
-                return publications.value.filter((publication) =>
-                    publication.title.includes(searchInput.value)
+            const filteredPublications = computed(() => {
+                if (searchInput.value) {
+                    return publications.value.filter(publication =>
+                        publication.title.includes(searchInput.value)
+                    )
+                }
+                return publications.value
+            })
+
+            const paginatedPublications = computed(() => {
+                const startIndex = (currentPage.value - 1) * publicationPerPage.value
+                return filteredPublications.value.slice(
+                    startIndex,
+                    startIndex + publicationPerPage.value
                 )
+            })
+
+            return {
+                publications,
+                searchInput,
+                isSearchInputOpen,
+                currentPage,
+                publicationPerPage,
+                paginatedPublications,
+                filteredPublications
             }
-            return publications.value
-        })
-
-        const paginatedPublications = computed(() => {
-            const startIndex = (currentPage.value - 1) * publicationPerPage.value
-            return filteredPublications.value.slice(
-                startIndex,
-                startIndex + publicationPerPage.value
-            )
-        })
-
-        return {
-            publications,
-            searchInput,
-            isSearchInputOpen,
-            currentPage,
-            publicationPerPage,
-            paginatedPublications,
-            filteredPublications
         }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.publications {
-    position: relative;
-    display: grid;
-
-    &__top {
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 52px;
-    }
-
-    &__title {
-        margin-right: 32px;
-        font-size: 30px;
-        color: $black-color;
-        font-weight: 700;
-        line-height: normal;
-    }
-
-    &__add-button {
+    .publications {
         position: relative;
-    }
+        display: grid;
 
-    &__edit {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0;
-        z-index: 1;
-    }
+        &__top {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 52px;
+        }
 
-    &__search {
-        position: absolute;
-        top: 5px;
-        right: 0px;
-    }
+        &__title {
+            margin-right: 32px;
+            font-size: 30px;
+            color: $black-color;
+            font-weight: 700;
+            line-height: normal;
+        }
 
-    &__list {
-        margin-bottom: 45px !important;
-    }
+        &__add-button {
+            position: relative;
+        }
 
-    &__pagination {
-        justify-self: center;
-    }
-}
+        &__edit {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1;
+        }
 
-.search {
-    &__input {
-        padding: 5px 20px 5px 40px;
-        width: 123px;
-        height: 45px;
-        border: 1px solid $main-border-color;
-        border-radius: 5px;
-        transition: width 0.2s ease-in-out;
-    }
+        &__search {
+            position: absolute;
+            top: 5px;
+            right: 0px;
+        }
 
-    &__input-open {
-        width: 800px;
-    }
+        &__list {
+            margin-bottom: 45px !important;
+        }
 
-    &__icon {
-        position: absolute;
-        left: 13px;
-        top: 14px;
-        width: 20px;
-        height: 20px;
-        font-size: 16px;
-    }
-
-    &__mark {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        font-size: 18px;
-        font-weight: 700;
-        transform: translateY(-50%);
-        cursor: pointer;
-    }
-}
-
-.list {
-    @include list-reset;
-    display: grid;
-    grid-template-columns: repeat(3, 366px);
-    grid-row-gap: 30px;
-    justify-content: space-between;
-}
-
-.publication {
-    &__img {
-        width: 366px;
-        height: 218px;
-        border: 1px solid $main-border-color;
-    }
-
-    &__content {
-        padding-top: 20px;
-    }
-
-    &__title {
-        display: block;
-        margin: 0 0 10px;
-        font-size: 16px;
-        font-weight: 700;
-        text-decoration: underline;
-        line-height: 24px;
-        color: $black-color;
-        transition: opacity 0.2s ease-in-out;
-
-        &:hover,
-        &:focus {
-            opacity: 0.8;
-            outline: none;
+        &__pagination {
+            justify-self: center;
         }
     }
 
-    &__wrapper {
-        display: flex;
+    .search {
+        &__input {
+            padding: 5px 20px 5px 40px;
+            width: 123px;
+            height: 45px;
+            border: 1px solid $main-border-color;
+            border-radius: 5px;
+            transition: width 0.2s ease-in-out;
+        }
+
+        &__input-open {
+            width: 800px;
+        }
+
+        &__icon {
+            position: absolute;
+            left: 13px;
+            top: 14px;
+            width: 20px;
+            height: 20px;
+            font-size: 16px;
+        }
+
+        &__mark {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            font-size: 18px;
+            font-weight: 700;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    }
+
+    .list {
+        @include list-reset;
+        display: grid;
+        grid-template-columns: repeat(3, 366px);
+        grid-row-gap: 30px;
         justify-content: space-between;
-        align-items: center;
     }
 
-    &__date {
-        padding: 10px 20px;
-        font-size: 11px;
-        line-height: normal;
-        text-align: center;
-        color: $main-bg-color;
-        background-color: $date-bg-color;
-    }
+    .publication {
+        &__img {
+            width: 366px;
+            height: 218px;
+            border: 1px solid $main-border-color;
+        }
 
-    &__button {
-        @include btn-reset;
-        position: relative;
-    }
+        &__content {
+            padding-top: 20px;
+        }
 
-    &__icon {
-        font-size: 20px;
+        &__title {
+            display: block;
+            margin: 0 0 10px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: underline;
+            line-height: 24px;
+            color: $black-color;
+            transition: opacity 0.2s ease-in-out;
+
+            &:hover,
+            &:focus {
+                opacity: 0.8;
+                outline: none;
+            }
+        }
+
+        &__wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        &__date {
+            padding: 10px 20px;
+            font-size: 11px;
+            line-height: normal;
+            text-align: center;
+            color: $main-bg-color;
+            background-color: $date-bg-color;
+        }
+
+        &__button {
+            @include btn-reset;
+            position: relative;
+        }
+
+        &__icon {
+            font-size: 20px;
+        }
     }
-}
 </style>

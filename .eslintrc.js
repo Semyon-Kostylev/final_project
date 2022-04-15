@@ -17,10 +17,12 @@ module.exports = {
                 bracketSpacing: true,
                 bracketSameLine: false,
                 tabWidth: 4,
-                semi: false
+                semi: false,
+                arrowParens: 'avoid',
+                vueIndentScriptAndStyle: true
             }
         ],
-        'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-        'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+        'no-console': 'warn',
+        'no-debugger': 'warn'
     }
 }

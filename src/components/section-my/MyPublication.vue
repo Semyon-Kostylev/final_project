@@ -35,117 +35,117 @@
 </template>
 
 <script>
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import axios from 'axios'
-import { message } from 'ant-design-vue'
-import MyPublicationDetailEdit from '@/components/publication-events/MyPublicationDetailEdit.vue'
+    import { ref } from 'vue'
+    import { useRoute } from 'vue-router'
+    import axios from 'axios'
+    import { message } from 'ant-design-vue'
+    import MyPublicationDetailEdit from '@/components/publication-events/MyPublicationDetailEdit.vue'
 
-export default {
-    components: {
-        MyPublicationDetailEdit
-    },
+    export default {
+        components: {
+            MyPublicationDetailEdit
+        },
 
-    setup() {
-        const route = useRoute()
-        const publication = ref([])
-        const publicationIsDeleted = ref(false)
+        setup() {
+            const route = useRoute()
+            const publication = ref([])
+            const publicationIsDeleted = ref(false)
 
-        axios
-            .get(
-                `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
-            )
-            .then((response) => (publication.value = response.data))
-            .catch(() => console.log('ошибка'))
-
-        const cancel = () => {
-            return
-        }
-
-        const removePublication = () => {
             axios
-                .delete(
+                .get(
                     `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
                 )
-                .then(() => {
-                    publication.value = null
-                    publicationIsDeleted.value = true
-                    message.success('Публикация успешно удалена')
-                })
-                .catch(() => console.log('ошибка'))
-        }
+                .then(response => (publication.value = response.data))
+                .catch()
 
-        return {
-            publication,
-            publicationIsDeleted,
-            removePublication,
-            confirm,
-            cancel
+            const cancel = () => {
+                return
+            }
+
+            const removePublication = () => {
+                axios
+                    .delete(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                    )
+                    .then(() => {
+                        publication.value = null
+                        publicationIsDeleted.value = true
+                        message.success('Публикация успешно удалена')
+                    })
+                    .catch()
+            }
+
+            return {
+                publication,
+                publicationIsDeleted,
+                removePublication,
+                confirm,
+                cancel
+            }
         }
     }
-}
 </script>
 
 <style lang="scss" scoped>
-.publication {
-    display: grid;
-
-    &__link-back {
-        margin-bottom: 29px;
-    }
-
-    &__title {
-        margin-bottom: 20px;
-        font-size: 30px;
-        color: $black-color;
-        font-weight: 700;
-        line-height: normal;
-    }
-
-    &__date {
-        padding: 10px 20px;
-        width: max-content;
-        margin-bottom: 20px;
-        font-size: 11px;
-        line-height: normal;
-        text-align: center;
-        color: $main-bg-color;
-        background-color: $date-bg-color;
-    }
-
-    &__wrapper {
+    .publication {
         display: grid;
-        grid-template-columns: max-content max-content;
-        column-gap: 111px;
-        margin-bottom: 20px;
-    }
 
-    &__img {
-        width: 682px;
-        height: 406px;
-    }
+        &__link-back {
+            margin-bottom: 29px;
+        }
 
-    &__btn-group {
-        display: grid;
-        row-gap: 20px;
-        height: max-content;
-    }
+        &__title {
+            margin-bottom: 20px;
+            font-size: 30px;
+            color: $black-color;
+            font-weight: 700;
+            line-height: normal;
+        }
 
-    &__btn {
-        position: relative;
-    }
+        &__date {
+            padding: 10px 20px;
+            width: max-content;
+            margin-bottom: 20px;
+            font-size: 11px;
+            line-height: normal;
+            text-align: center;
+            color: $main-bg-color;
+            background-color: $date-bg-color;
+        }
 
-    &__edit {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        bottom: 0;
-        z-index: 1;
-    }
+        &__wrapper {
+            display: grid;
+            grid-template-columns: max-content max-content;
+            column-gap: 111px;
+            margin-bottom: 20px;
+        }
 
-    &__description {
-        max-width: 682px;
+        &__img {
+            width: 682px;
+            height: 406px;
+        }
+
+        &__btn-group {
+            display: grid;
+            row-gap: 20px;
+            height: max-content;
+        }
+
+        &__btn {
+            position: relative;
+        }
+
+        &__edit {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        &__description {
+            max-width: 682px;
+        }
     }
-}
 </style>

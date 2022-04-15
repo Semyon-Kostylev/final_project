@@ -23,71 +23,69 @@
     </div>
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
-import axios from 'axios'
-export default defineComponent({
-    props: {
-        publication: Object
-    },
+    import { defineComponent, ref } from 'vue'
+    import axios from 'axios'
+    export default defineComponent({
+        props: {
+            publication: Object
+        },
 
-    setup(props) {
-        const visible = ref(false)
+        setup(props) {
+            const visible = ref(false)
 
-        const showModal = () => {
-            visible.value = true
-        }
-
-        const handleOk = () => {
-            if (
-                title.value === props.publication.title &&
-                description.value === props.publication.description
-            ) {
-                return
+            const showModal = () => {
+                visible.value = true
             }
 
-            axios
-                .put(
-                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${props.publication.id}`,
-                    {
-                        title: title.value,
-                        oldDate: props.publication.oldDate,
-                        newDate: currentDate,
-                        date: `${props.publication.oldDate} (изменено ${currentDate})`,
-                        description: description.value
-                    }
-                )
-                .then(() => location.reload())
-                .catch(() => {
-                    console.log('error')
-                })
-        }
-        const currentDate = new Date().toLocaleDateString()
-        const title = ref(props.publication.title)
-        const description = ref(props.publication.description)
+            const handleOk = () => {
+                if (
+                    title.value === props.publication.title &&
+                    description.value === props.publication.description
+                ) {
+                    return
+                }
 
-        return {
-            visible,
-            showModal,
-            handleOk,
-            title,
-            description
+                axios
+                    .put(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${props.publication.id}`,
+                        {
+                            title: title.value,
+                            oldDate: props.publication.oldDate,
+                            newDate: currentDate,
+                            date: `${props.publication.oldDate} (изменено ${currentDate})`,
+                            description: description.value
+                        }
+                    )
+                    .then(() => window.location.reload())
+                    .catch()
+            }
+            const currentDate = new Date().toLocaleDateString()
+            const title = ref(props.publication.title)
+            const description = ref(props.publication.description)
+
+            return {
+                visible,
+                showModal,
+                handleOk,
+                title,
+                description
+            }
         }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.publication-edit {
-    &__btn {
-        width: 100%;
-        height: 100%;
-    }
-    &__area {
-        padding: 10px;
-        margin-bottom: 30px;
-        &:last-child {
-            margin-bottom: 0;
+    .publication-edit {
+        &__btn {
+            width: 100%;
+            height: 100%;
+        }
+        &__area {
+            padding: 10px;
+            margin-bottom: 30px;
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
-}
 </style>

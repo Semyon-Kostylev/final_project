@@ -23,85 +23,81 @@
     </div>
 </template>
 <script>
-import { defineComponent, ref } from 'vue'
-import axios from 'axios'
-import { useRoute } from 'vue-router'
-export default defineComponent({
-    setup() {
-        const route = useRoute()
-        const visible = ref(false)
+    import { defineComponent, ref } from 'vue'
+    import axios from 'axios'
+    import { useRoute } from 'vue-router'
+    export default defineComponent({
+        setup() {
+            const route = useRoute()
+            const visible = ref(false)
 
-        const showModal = () => {
-            visible.value = true
-        }
-
-        const publication = ref({})
-
-        axios
-            .get(
-                `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
-            )
-            .then((response) => {
-                publication.value = response.data
-                title.value = publication.value.title
-                description.value = publication.value.description
-            })
-            .catch(() => {
-                console.log('error')
-            })
-
-        const handleOk = () => {
-            if (
-                title.value === publication.value.title &&
-                description.value === publication.value.description
-            ) {
-                return
+            const showModal = () => {
+                visible.value = true
             }
 
-            axios
-                .put(
-                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`,
-                    {
-                        title: title.value,
-                        oldDate: publication.value.oldDate,
-                        newDate: currentDate,
-                        date: `${publication.value.oldDate} (изменено ${currentDate})`,
-                        description: description.value
-                    }
-                )
-                .then(() => location.reload())
-                .catch(() => {
-                    console.log('error')
-                })
-        }
-        const currentDate = new Date().toLocaleDateString()
-        const title = ref('')
-        const description = ref('')
+            const publication = ref({})
 
-        return {
-            visible,
-            showModal,
-            handleOk,
-            title,
-            description,
-            publication
+            axios
+                .get(
+                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                )
+                .then(response => {
+                    publication.value = response.data
+                    title.value = publication.value.title
+                    description.value = publication.value.description
+                })
+                .catch()
+
+            const handleOk = () => {
+                if (
+                    title.value === publication.value.title &&
+                    description.value === publication.value.description
+                ) {
+                    return
+                }
+
+                axios
+                    .put(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`,
+                        {
+                            title: title.value,
+                            oldDate: publication.value.oldDate,
+                            newDate: currentDate,
+                            date: `${publication.value.oldDate} (изменено ${currentDate})`,
+                            description: description.value
+                        }
+                    )
+                    .then(() => window.location.reload())
+                    .catch()
+            }
+            const currentDate = new Date().toLocaleDateString()
+            const title = ref('')
+            const description = ref('')
+
+            return {
+                visible,
+                showModal,
+                handleOk,
+                title,
+                description,
+                publication
+            }
         }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.publication-edit {
-    &__btn {
-        width: 100%;
-        height: 100%;
-    }
-    &__area {
-        padding: 10px;
-        margin-bottom: 30px;
-        &:last-child {
-            margin-bottom: 0;
+    .publication-edit {
+        &__btn {
+            width: 100%;
+            height: 100%;
+        }
+        &__area {
+            padding: 10px;
+            margin-bottom: 30px;
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
-}
 </style>

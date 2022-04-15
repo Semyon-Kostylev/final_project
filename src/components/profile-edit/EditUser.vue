@@ -74,118 +74,126 @@
     </div>
 </template>
 <script>
-import { defineComponent, reactive } from 'vue'
-import axios from 'axios'
-import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import { defineComponent, reactive } from 'vue'
+    import { useRouter } from 'vue-router'
+    import axios from 'axios'
+    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
 
-export default defineComponent({
-    setup() {
-        const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+    export default defineComponent({
+        setup() {
+            const router = useRouter()
 
-        const formState = reactive({
-            firstname: currentUser.firstname,
-            middlename: currentUser.middlename,
-            lastname: currentUser.lastname
-        })
+            const currentUser = localStorage['currentUser']
+                ? reactive(JSON.parse(localStorage['currentUser']))
+                : null
 
-        const onFinish = () => {
-            if (
-                currentUser.firstname === formState.firstname &&
-                currentUser.middlename === formState.middlename &&
-                currentUser.lastname === formState.lastname
-            ) {
+            if (currentUser === null) {
+                router.push({ name: 'authorization' })
                 return
             }
 
-            if (formState.firstname) {
-                currentUser.firstname = formState.firstname
+            const formState = reactive({
+                firstname: currentUser.firstname ? currentUser.firstname : '',
+                middlename: currentUser.middlename ? currentUser.middlename : '',
+                lastname: currentUser.lastname ? currentUser.lastname : ''
+            })
+
+            const onFinish = () => {
+                if (
+                    currentUser.firstname === formState.firstname &&
+                    currentUser.middlename === formState.middlename &&
+                    currentUser.lastname === formState.lastname
+                ) {
+                    return
+                }
+
+                if (formState.firstname) {
+                    currentUser.firstname = formState.firstname
+                }
+
+                if (formState.middlename) {
+                    currentUser.middlename = formState.middlename
+                }
+
+                if (formState.lastname) {
+                    currentUser.lastname = formState.lastname
+                }
+
+                axios
+                    .put(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
+                        {
+                            firstname: currentUser.firstname,
+                            middlename: currentUser.middlename,
+                            lastname: currentUser.lastname
+                        }
+                    )
+                    .then(() => {
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser))
+                        openNotificationWithIcon('success', 'Данные успешно изменены!')
+                        setTimeout(() => window.location.reload(), 2000)
+                    })
+                    .catch()
             }
 
-            if (formState.middlename) {
-                currentUser.middlename = formState.middlename
+            return {
+                currentUser,
+                formState,
+                onFinish
             }
-
-            if (formState.lastname) {
-                currentUser.lastname = formState.lastname
-            }
-
-            axios
-                .put(
-                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
-                    {
-                        firstname: currentUser.firstname,
-                        middlename: currentUser.middlename,
-                        lastname: currentUser.lastname
-                    }
-                )
-                .then(() => {
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser))
-                    openNotificationWithIcon('success', 'Данные успешно изменены! Ожидайте...')
-                    setTimeout(() => location.reload(), 2000)
-                })
-                .catch(() => {
-                    console.log('ошибка')
-                })
         }
-
-        return {
-            currentUser,
-            formState,
-            onFinish
-        }
-    }
-})
+    })
 </script>
 
 <style lang="scss" scoped>
-.edit-user {
-    width: 541px;
+    .edit-user {
+        width: 541px;
 
-    &__title {
-        margin-bottom: 40px;
-        font-size: 30px;
-        font-weight: 700;
-        line-height: normal;
-        color: $black-color;
+        &__title {
+            margin-bottom: 40px;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: normal;
+            color: $black-color;
+        }
+
+        &__wrapper {
+            display: flex;
+            justify-content: space-between;
+        }
     }
 
-    &__wrapper {
+    .form {
+        width: 324px;
+
+        &__input {
+            margin-bottom: 15px;
+        }
+
+        &__input-last {
+            margin-bottom: 20px;
+        }
+    }
+
+    .form-input {
+        position: relative;
+    }
+
+    .photo {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+
+        &__image {
+            width: 183px;
+            height: 171px;
+            border: 1px solid $main-border-color;
+            margin-bottom: 9px;
+        }
+
+        &__link {
+            align-self: center;
+            width: max-content;
+            text-align: center;
+        }
     }
-}
-
-.form {
-    width: 324px;
-
-    &__input {
-        margin-bottom: 15px;
-    }
-
-    &__input-last {
-        margin-bottom: 20px;
-    }
-}
-
-.form-input {
-    position: relative;
-}
-
-.photo {
-    display: flex;
-    flex-direction: column;
-
-    &__image {
-        width: 183px;
-        height: 171px;
-        border: 1px solid $main-border-color;
-        margin-bottom: 9px;
-    }
-
-    &__link {
-        align-self: center;
-        width: max-content;
-        text-align: center;
-    }
-}
 </style>

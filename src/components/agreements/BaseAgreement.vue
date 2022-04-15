@@ -52,92 +52,92 @@
 </template>
 
 <script>
-import vClickOutside from 'click-outside-vue3'
+    import vClickOutside from 'click-outside-vue3'
 
-export default {
-    props: {
-        modal: Boolean
-    },
+    export default {
+        props: {
+            modal: Boolean
+        },
 
-    emits: ['close-modal'],
+        emits: ['close-modal'],
 
-    directives: {
-        clickOutside: vClickOutside.directive
-    },
+        directives: {
+            clickOutside: vClickOutside.directive
+        },
 
-    setup(props, { emit }) {
-        const onClickOutside = () => {
-            emit('close-modal')
-        }
+        setup(props, { emit }) {
+            const onClickOutside = () => {
+                emit('close-modal')
+            }
 
-        return {
-            onClickOutside
+            return {
+                onClickOutside
+            }
         }
     }
-}
 </script>
 
 <style lang="scss" scoped>
-.agreement {
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    width: 100%;
-    height: 100vh;
-    padding: 100px 30px;
-    background-color: $gray-bg-color;
-    z-index: 1;
-}
-
-.modal {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    padding: 47px 43px 30px 37px;
-    width: 906px;
-    height: 100%;
-    margin: 0 auto;
-    background-color: $main-bg-color;
-
-    &__close {
+    .agreement {
+        display: flex;
+        justify-content: center;
         position: absolute;
-        top: 8px;
-        right: 19px;
-        padding: 0;
-        margin: 0;
-        border: none;
-        font-size: 35px;
-        line-height: normal;
-        color: $black-color;
-        background-color: inherit;
-        cursor: pointer;
+        width: 100%;
+        height: 100vh;
+        padding: 100px 30px;
+        background-color: $gray-bg-color;
+        z-index: 1;
     }
 
-    &__title {
-        margin-bottom: 30px;
-        font-weight: 700;
-        color: $dark-black-color;
-        text-align: center;
-    }
+    .modal {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        padding: 47px 43px 30px 37px;
+        width: 906px;
+        height: 100%;
+        margin: 0 auto;
+        background-color: $main-bg-color;
 
-    &__content {
-        margin-bottom: 39px;
-        color: $black-color;
-        text-align: left;
-        line-height: 25px;
+        &__close {
+            position: absolute;
+            top: 8px;
+            right: 19px;
+            padding: 0;
+            margin: 0;
+            border: none;
+            font-size: 35px;
+            line-height: normal;
+            color: $black-color;
+            background-color: inherit;
+            cursor: pointer;
+        }
 
-        & p {
-            margin-bottom: 15px;
+        &__title {
+            margin-bottom: 30px;
+            font-weight: 700;
+            color: $dark-black-color;
+            text-align: center;
+        }
+
+        &__content {
+            margin-bottom: 39px;
+            color: $black-color;
+            text-align: left;
+            line-height: 25px;
+
+            & p {
+                margin-bottom: 15px;
+            }
+        }
+
+        &__button {
+            margin: auto auto 0;
+            width: 204px;
+            height: 45px;
+            border-radius: 5px;
+            font-weight: 700;
+            line-height: normal;
         }
     }
-
-    &__button {
-        margin: auto auto 0;
-        width: 204px;
-        height: 45px;
-        border-radius: 5px;
-        font-weight: 700;
-        line-height: normal;
-    }
-}
 </style>
