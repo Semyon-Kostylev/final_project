@@ -116,6 +116,14 @@
 
             const { users } = getUsers()
 
+            const currentUser = localStorage['currentUser']
+                ? reactive(JSON.parse(localStorage['currentUser']))
+                : null
+
+            if (currentUser) {
+                router.push({ name: 'user' })
+            }
+
             // Методы регистрации
             const onFinish = values => {
                 const findUser = users.value.find(user => user.email === values.email)

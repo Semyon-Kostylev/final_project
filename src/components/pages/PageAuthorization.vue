@@ -88,6 +88,14 @@
 
             const { users } = getUsers()
 
+            const currentUser = localStorage['currentUser']
+                ? reactive(JSON.parse(localStorage['currentUser']))
+                : null
+
+            if (currentUser) {
+                router.push({ name: 'user' })
+            }
+
             const onFinish = values => {
                 let currentUser
 

@@ -89,13 +89,12 @@
 
             if (currentUser === null) {
                 router.push({ name: 'authorization' })
-                return
             }
 
             const formState = reactive({
-                firstname: currentUser.firstname ? currentUser.firstname : '',
-                middlename: currentUser.middlename ? currentUser.middlename : '',
-                lastname: currentUser.lastname ? currentUser.lastname : ''
+                firstname: currentUser.firstname,
+                middlename: currentUser.middlename,
+                lastname: currentUser.lastname
             })
 
             const onFinish = () => {
