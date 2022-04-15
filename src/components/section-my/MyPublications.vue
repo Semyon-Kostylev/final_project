@@ -4,7 +4,10 @@
             <h1 class="publications__title">Мои публикации</h1>
             <a-button class="publications__add-button btn" type="primary">
                 Добавить
-                <my-publication-add class="publications__edit" />
+                <my-publication-add
+                    class="publications__edit"
+                    @add-publication="editPublications"
+                />
             </a-button>
         </div>
 

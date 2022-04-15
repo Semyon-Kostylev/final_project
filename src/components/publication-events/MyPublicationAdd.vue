@@ -26,7 +26,7 @@
     import { defineComponent, ref } from 'vue'
     import axios from 'axios'
     export default defineComponent({
-        setup() {
+        setup(props, context) {
             const visible = ref(false)
 
             const showModal = () => {
@@ -45,7 +45,10 @@
                         date: currentDate,
                         description: description.value
                     })
-                    .then(() => window.location.reload())
+                    .then(() => {
+                        visible.value = false
+                        context.emit('addPublication')
+                    })
                     .catch()
             }
             const currentDate = new Date().toLocaleDateString()
