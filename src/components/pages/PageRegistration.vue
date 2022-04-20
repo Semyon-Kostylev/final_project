@@ -89,12 +89,12 @@
     </div>
 </template>
 <script>
-    import { defineComponent, reactive, ref } from 'vue'
+    import { defineComponent, reactive, ref, onMounted } from 'vue'
     import { useRouter } from 'vue-router'
     import axios from 'axios'
     import BaseAgreement from '@/components/agreements/BaseAgreement.vue'
-    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
-    import getUsers from '@/composables/getUsers'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
+    import useUsers from '@/composables/useUsers'
 
     export default defineComponent({
         components: {
@@ -106,7 +106,6 @@
 
             const modalState = ref(false)
 
-            // Данные форм
             const formState = reactive({
                 email: '',
                 password: ''
@@ -114,46 +113,50 @@
 
             const invalidMessage = ref('')
 
-            const { users } = getUsers()
+            const users = ref()
+            const { getUsers } = useUsers()
 
-            const currentUser = localStorage['currentUser']
-                ? reactive(JSON.parse(localStorage['currentUser']))
-                : null
+            onMounted(async () => (users.value = await getUsers()))
 
-            if (currentUser) {
-                router.push({ name: 'user' })
-            }
-
-            // Методы регистрации
             const onFinish = values => {
                 const findUser = users.value.find(user => user.email === values.email)
 
                 if (findUser) {
                     invalidMessage.value = 'Пользователь с таким Email уже существует'
-                    openNotificationWithIcon('error', invalidMessage.value)
+                    useNotificationWithIcon('error', invalidMessage.value)
                     return
                 }
 
                 if (values.password.length < 5) {
                     invalidMessage.value = 'Длина пароля должна быть не менее 5 символов'
-                    openNotificationWithIcon('error', invalidMessage.value)
+                    useNotificationWithIcon('error', invalidMessage.value)
                     return
                 }
 
-                axios
-                    .post('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users', {
-                        firstname: '',
-                        middlename: '',
-                        lastname: '',
-                        email: formState.email,
-                        password: formState.password
-                    })
-                    .then(() => {
+                const postNewUser = async () => {
+                    try {
+                        await axios.post(
+                            'https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users',
+                            {
+                                firstname: '',
+                                middlename: '',
+                                lastname: '',
+                                email: formState.email,
+                                password: formState.password
+                            }
+                        )
                         invalidMessage.value = 'Вы успешно зарегистрировались! Ожидайте...'
-                        openNotificationWithIcon('success', invalidMessage.value)
+                        useNotificationWithIcon('success', invalidMessage.value)
                         setTimeout(() => router.push({ name: 'authorization' }), 2000)
-                    })
-                    .catch()
+                    } catch {
+                        useNotificationWithIcon(
+                            'error',
+                            'При выполнении действия произошла ошибка. Попоробуйте снова'
+                        )
+                    }
+                }
+
+                postNewUser()
             }
 
             return {

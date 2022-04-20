@@ -56,8 +56,8 @@ const routes = [
                 component: MyPublications
             },
             {
-                name: 'my-publication',
-                path: '/my-publications/:id',
+                name: 'publication',
+                path: '/publications/:id',
                 component: MyPublication
             },
             {
@@ -92,6 +92,25 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
+})
+
+router.beforeEach(to => {
+    const currentUser = localStorage['currentUser'] ? true : false
+    if (
+        !currentUser &&
+        to.name !== 'authorization' &&
+        to.name !== 'forget-password' &&
+        to.name !== 'registration'
+    )
+        return { name: 'authorization' }
+    else if (currentUser) {
+        if (
+            to.name === 'authorization' ||
+            to.name === 'forget-password' ||
+            to.name === 'registration'
+        )
+            return { name: 'user' }
+    }
 })
 
 export default router

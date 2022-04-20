@@ -76,18 +76,12 @@
 </template>
 <script>
     import { defineComponent, reactive } from 'vue'
-    import { useRouter } from 'vue-router'
     import axios from 'axios'
-    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
 
     export default defineComponent({
         setup() {
-            const router = useRouter()
             const currentUser = reactive(JSON.parse(localStorage['currentUser']))
-
-            if (!currentUser) {
-                router.push({ name: 'authorization' })
-            }
 
             const formState = reactive({
                 oldPassword: '',
@@ -99,46 +93,52 @@
             const onFinish = () => {
                 if (formState.oldPassword !== currentUser.password) {
                     formState.formMessage = 'Вы ввели неверный текущий пароль'
-                    openNotificationWithIcon('error', formState.formMessage)
+                    useNotificationWithIcon('error', formState.formMessage)
                     return
                 }
 
                 if (formState.oldPassword === formState.newPassword) {
                     formState.formMessage = 'Текущий пароль и новый пароль не должны совпадать'
-                    openNotificationWithIcon('error', formState.formMessage)
+                    useNotificationWithIcon('error', formState.formMessage)
                     return
                 }
 
                 if (formState.newPassword.length < 5) {
                     formState.formMessage = 'Длина нового пароля должна быть не менее 5 символов'
-                    openNotificationWithIcon('error', formState.formMessage)
+                    useNotificationWithIcon('error', formState.formMessage)
                     return
                 }
 
                 if (formState.newPassword !== formState.repeatNewPassword) {
                     formState.formMessage = 'Вы ввели два разных новых пароля'
-                    openNotificationWithIcon('error', formState.formMessage)
+                    useNotificationWithIcon('error', formState.formMessage)
                     return
                 }
 
                 currentUser.password = formState.repeatNewPassword
 
-                axios
-                    .put(
-                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
-                        {
-                            password: currentUser.password
-                        }
-                    )
-                    .then(() => {
+                const editPassword = async () => {
+                    try {
+                        await axios.put(
+                            `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
+                            {
+                                password: currentUser.password
+                            }
+                        )
                         localStorage.setItem('currentUser', JSON.stringify(currentUser))
                         formState.formMessage = 'Пароль успешно изменён!'
-                        openNotificationWithIcon('success', formState.formMessage)
+                        useNotificationWithIcon('success', formState.formMessage)
                         formState.oldPassword = ''
                         formState.newPassword = ''
                         formState.repeatNewPassword = ''
-                    })
-                    .catch()
+                    } catch {
+                        useNotificationWithIcon(
+                            'error',
+                            'При выполнении действия произошла ошибка. Попоробуйте снова'
+                        )
+                    }
+                }
+                editPassword()
             }
 
             return {

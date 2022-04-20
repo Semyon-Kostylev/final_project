@@ -13,18 +13,16 @@
                 placeholder="Заголовок публикации"
                 :rows="3"
             />
-            <a-textarea
-                class="publication-edit__area"
-                v-model:value="description"
-                placeholder="Текст публикации"
-                :rows="15"
-            />
+            <ckeditor :editor="editor" v-model="description"></ckeditor>
         </a-modal>
     </div>
 </template>
 <script>
     import { defineComponent, ref } from 'vue'
     import axios from 'axios'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
+
     export default defineComponent({
         props: {
             publication: Object
@@ -45,33 +43,44 @@
                     return
                 }
 
-                axios
-                    .put(
-                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${props.publication.id}`,
-                        {
-                            title: title.value,
-                            oldDate: props.publication.oldDate,
-                            newDate: currentDate,
-                            date: `${props.publication.oldDate} (изменено ${currentDate})`,
-                            description: description.value
-                        }
-                    )
-                    .then(() => {
+                const editPublication = async () => {
+                    try {
+                        await axios.put(
+                            `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${props.publication.id}`,
+                            {
+                                title: title.value,
+                                newDate: currentDate,
+                                newDateVision: currentDate.toLocaleDateString(),
+                                date: `${
+                                    props.publication.oldDateVision
+                                } (изменено ${currentDate.toLocaleDateString()})`,
+                                description: description.value
+                            }
+                        )
                         visible.value = false
                         context.emit('editPublication')
-                    })
-                    .catch()
+                    } catch {
+                        useNotificationWithIcon(
+                            'error',
+                            'При выполнении действия произошла ошибка. Попоробуйте снова'
+                        )
+                    }
+                }
+                editPublication()
             }
-            const currentDate = new Date().toLocaleDateString()
+            const currentDate = new Date()
             const title = ref(props.publication.title)
             const description = ref(props.publication.description)
+
+            const editor = ClassicEditor
 
             return {
                 visible,
                 showModal,
                 handleOk,
                 title,
-                description
+                description,
+                editor
             }
         }
     })

@@ -101,14 +101,7 @@
         setup() {
             const router = useRouter()
 
-            const currentUser = localStorage['currentUser']
-                ? reactive(JSON.parse(localStorage['currentUser']))
-                : null
-
-            if (currentUser === null) {
-                router.push({ name: 'authorization' })
-                return
-            }
+            const currentUser = reactive(JSON.parse(localStorage['currentUser']))
 
             const headerNavLinks = [
                 { title: 'Публикации', id: 1, urlName: 'publications' },

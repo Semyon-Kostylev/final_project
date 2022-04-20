@@ -70,10 +70,10 @@
     </div>
 </template>
 <script>
-    import { defineComponent, reactive, ref } from 'vue'
+    import { defineComponent, onMounted, reactive, ref } from 'vue'
     import { useRouter } from 'vue-router'
-    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
-    import getUsers from '@/composables/getUsers'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
+    import useUsers from '@/composables/useUsers'
 
     export default defineComponent({
         setup() {
@@ -86,15 +86,10 @@
 
             const invalidMessage = ref('')
 
-            const { users } = getUsers()
+            const users = ref()
+            const { getUsers } = useUsers()
 
-            const currentUser = localStorage['currentUser']
-                ? reactive(JSON.parse(localStorage['currentUser']))
-                : null
-
-            if (currentUser) {
-                router.push({ name: 'user' })
-            }
+            onMounted(async () => (users.value = await getUsers()))
 
             const onFinish = values => {
                 let currentUser
@@ -110,7 +105,7 @@
                     router.push({ name: 'user' })
                 } else {
                     invalidMessage.value = 'Неверный Email или пароль'
-                    openNotificationWithIcon('error', invalidMessage.value)
+                    useNotificationWithIcon('error', invalidMessage.value)
                 }
             }
 

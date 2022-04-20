@@ -7,6 +7,7 @@
                 <my-publication-add
                     class="publications__edit"
                     @add-publication="editPublications"
+                    :current-user="currentUser"
                 />
             </a-button>
         </div>
@@ -40,7 +41,7 @@
                 <article class="list__article publication">
                     <router-link
                         class="publication__link"
-                        :to="{ name: 'my-publication', params: { id: publication.id } }"
+                        :to="{ name: 'publication', params: { id: publication.id } }"
                     >
                         <img
                             class="publication__img"
@@ -53,9 +54,9 @@
                         <router-link
                             class="publication__title"
                             href="#"
-                            :to="{ name: 'my-publication', params: { id: publication.id } }"
+                            :to="{ name: 'publication', params: { id: publication.id } }"
                         >
-                            {{ publication.title }} "Лучшее...
+                            {{ publication.title }}
                         </router-link>
                         <div class="publication__wrapper">
                             <span class="publication__date">{{ publication.date }}</span>
@@ -85,9 +86,10 @@
 </template>
 
 <script>
-    import { defineComponent, ref, computed } from 'vue'
+    import { defineComponent, ref, computed, reactive, onMounted } from 'vue'
     import { SearchOutlined, FormOutlined } from '@ant-design/icons-vue'
     import axios from 'axios'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
     import MyPublicationAdd from '@/components/publication-events/MyPublicationAdd.vue'
     import MyPublicationEdit from '@/components/publication-events/MyPublicationEdit.vue'
 
@@ -100,11 +102,24 @@
         },
 
         setup() {
+            const currentUser = reactive(JSON.parse(localStorage['currentUser']))
+
             const publications = ref([])
-            axios
-                .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
-                .then(response => (publications.value = response.data.reverse()))
-                .catch()
+
+            async function getMyPublications() {
+                try {
+                    const response = await axios.get(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications`
+                    )
+                    const allPublications = response.data.reverse()
+                    publications.value = allPublications.filter(
+                        publication => publication.author.id === +currentUser.id
+                    )
+                } catch {
+                    useNotificationWithIcon('error', 'При загрузке страницы произошла ошибка')
+                }
+            }
+            onMounted(async () => await getMyPublications())
 
             const searchInput = ref('')
             const isSearchInputOpen = ref(false)
@@ -130,10 +145,7 @@
             })
 
             const editPublications = () => {
-                axios
-                    .get('https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications')
-                    .then(response => (publications.value = response.data.reverse()))
-                    .catch()
+                getMyPublications()
             }
 
             return {
@@ -144,7 +156,8 @@
                 publicationPerPage,
                 paginatedPublications,
                 filteredPublications,
-                editPublications
+                editPublications,
+                currentUser
             }
         }
     })

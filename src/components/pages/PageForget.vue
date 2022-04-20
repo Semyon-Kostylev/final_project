@@ -51,7 +51,7 @@
 </template>
 <script>
     import { defineComponent, reactive } from 'vue'
-    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
 
     export default defineComponent({
         setup() {
@@ -63,7 +63,7 @@
             const onFinish = () => {
                 formState.formMessage =
                     'На указанный адрес электронной почты отправлена инструкция о восстановлении пароля'
-                openNotificationWithIcon('success', formState.formMessage)
+                useNotificationWithIcon('success', formState.formMessage)
             }
 
             return {

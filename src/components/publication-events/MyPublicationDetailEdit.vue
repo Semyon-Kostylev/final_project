@@ -13,12 +13,7 @@
                 placeholder="Заголовок публикации"
                 :rows="3"
             />
-            <a-textarea
-                class="publication-edit__area"
-                v-model:value="description"
-                placeholder="Текст публикации"
-                :rows="15"
-            />
+            <ckeditor :editor="editor" v-model="description"></ckeditor>
         </a-modal>
     </div>
 </template>
@@ -26,6 +21,9 @@
     import { defineComponent, ref } from 'vue'
     import axios from 'axios'
     import { useRoute } from 'vue-router'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
+
     export default defineComponent({
         setup(props, context) {
             const route = useRoute()
@@ -37,16 +35,19 @@
 
             const publication = ref({})
 
-            axios
-                .get(
-                    `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
-                )
-                .then(response => {
+            async function getPublication() {
+                try {
+                    const response = await axios.get(
+                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`
+                    )
                     publication.value = response.data
                     title.value = publication.value.title
                     description.value = publication.value.description
-                })
-                .catch()
+                } catch {
+                    useNotificationWithIcon('error', 'При загрузке страницы произошла ошибка')
+                }
+            }
+            getPublication()
 
             const handleOk = () => {
                 if (
@@ -56,26 +57,36 @@
                     return
                 }
 
-                axios
-                    .put(
-                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`,
-                        {
-                            title: title.value,
-                            oldDate: publication.value.oldDate,
-                            newDate: currentDate,
-                            date: `${publication.value.oldDate} (изменено ${currentDate})`,
-                            description: description.value
-                        }
-                    )
-                    .then(() => {
+                const editPublication = async () => {
+                    try {
+                        await axios.put(
+                            `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/publications/${route.params.id}`,
+                            {
+                                title: title.value,
+                                newDate: currentDate,
+                                newDateVision: currentDate.toLocaleDateString(),
+                                date: `${
+                                    publication.value.oldDateVision
+                                } (изменено ${currentDate.toLocaleDateString()})`,
+                                description: description.value
+                            }
+                        )
                         visible.value = false
                         context.emit('editPublication')
-                    })
-                    .catch()
+                    } catch {
+                        useNotificationWithIcon(
+                            'error',
+                            'При выполнении действия произошла ошибка. Попоробуйте снова'
+                        )
+                    }
+                }
+                editPublication()
             }
-            const currentDate = new Date().toLocaleDateString()
+            const currentDate = new Date()
             const title = ref('')
             const description = ref('')
+
+            const editor = ClassicEditor
 
             return {
                 visible,
@@ -83,7 +94,8 @@
                 handleOk,
                 title,
                 description,
-                publication
+                publication,
+                editor
             }
         }
     })

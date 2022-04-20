@@ -75,21 +75,12 @@
 </template>
 <script>
     import { defineComponent, reactive } from 'vue'
-    import { useRouter } from 'vue-router'
     import axios from 'axios'
-    import openNotificationWithIcon from '@/composables/openNotificationWithIcon'
+    import useNotificationWithIcon from '@/composables/useNotificationWithIcon'
 
     export default defineComponent({
         setup(props, context) {
-            const router = useRouter()
-
-            const currentUser = localStorage['currentUser']
-                ? reactive(JSON.parse(localStorage['currentUser']))
-                : null
-
-            if (currentUser === null) {
-                router.push({ name: 'authorization' })
-            }
+            const currentUser = reactive(JSON.parse(localStorage['currentUser']))
 
             const formState = reactive({
                 firstname: currentUser.firstname,
@@ -118,21 +109,27 @@
                     currentUser.lastname = formState.lastname
                 }
 
-                axios
-                    .put(
-                        `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
-                        {
-                            firstname: currentUser.firstname,
-                            middlename: currentUser.middlename,
-                            lastname: currentUser.lastname
-                        }
-                    )
-                    .then(() => {
+                const editUser = async () => {
+                    try {
+                        await axios.put(
+                            `https://6239b76228bcd99f0273a823.mockapi.io/api/v1/users/${+currentUser.id}`,
+                            {
+                                firstname: currentUser.firstname,
+                                middlename: currentUser.middlename,
+                                lastname: currentUser.lastname
+                            }
+                        )
                         localStorage.setItem('currentUser', JSON.stringify(currentUser))
-                        openNotificationWithIcon('success', 'Данные успешно изменены!')
+                        useNotificationWithIcon('success', 'Данные успешно изменены!')
                         context.emit('editUser')
-                    })
-                    .catch()
+                    } catch {
+                        useNotificationWithIcon(
+                            'error',
+                            'При выполнении действия произошла ошибка. Попоробуйте снова'
+                        )
+                    }
+                }
+                editUser()
             }
 
             return {
